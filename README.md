@@ -1,26 +1,25 @@
-FTDI 245fifo interface
+FTDI-245fifo-interface
 ===========================
 基于FPGA的 FT232H、FT600 等 USB 芯片的高速通信 IP 核
 
-![Image text](https://github.com/WangXuan95/FTDI 245fifo interface/blob/master/doc/structure.png)
-
 # 简介
 
-245fifo 模式是 FTDI USB 芯片常见的一种高速字节流传输模式。该库将 245fifo 封装成接口IP核，留出精简易用的接口，方便Verilog开发者使用。并提供了几个测试用的python程序。测试结果：
+245fifo 模式是 FTDI USB 芯片常见的一种高速字节流传输模式。该库将 245fifo 封装成接口IP核，留出精简易用的接口，方便Verilog开发者使用。并提供了几个测试用的python程序。
 
-* **FT232H USB2.0**: 上行链路稳定工作在 **40MBps** 不丢失字节。(上行链路是指 FPGA->USB->PC机器)
-* **FT600  USB3.0**: 上行链路稳定工作在 **110MBps** 不丢失字节。(待改进，希望能达到之前裸测的170MBps)
-* 上行传输的同时支持少量的下行数据。还没有测试饱和的下行带宽。
+![Image text](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/structure.png)
 
-如下图，为提高通用性，该IP核解决了以下关键性问题：
+如上图，该IP核解决了以下关键性问题：
 
 * **读写分离**：工作在 245fifo 模式下的 USB 芯片的接口是半双工的，使用8bit或16bit inout 信号分时复用的完成读写，本IP核将读写接口分离出来，内部使用状态机控制分时复用的读写。
 * **跨时钟域**：工作在 245fifo 模式下的 USB 芯片有自己的时钟，不同于FPGA的时钟。该IP核使用异步 fifo 解决了跨时钟域问题。如下图，IP核跨3个时钟域：读时钟域，写时钟域、USB时钟域。当然，读写时钟域可以使用同一时钟。
 * **位宽变换**：由于USB芯片引脚数量固定，所以每次能够读写的位宽也是固定的。但开发者可能希望一个时钟周期发送自定义位宽的数据。该IP核分离出的读接口和写接口的位宽是可自定义的。
 * **移植性**：纯 SystemVerilog 编写，不调用任何 IP 核，方便在Altera、Xilinx等各种平台上一直
 
-![Image text](https://github.com/WangXuan95/FTDI 245fifo interface/blob/master/doc/structure.png)
-图： IP 核内部结构
+### 测试结果
+
+* **FT232H USB2.0**: 上行链路稳定工作在 **40MBps** 不丢失字节。(上行链路是指 FPGA->USB->PC机器)
+* **FT600  USB3.0**: 上行链路稳定工作在 **110MBps** 不丢失字节。(待改进，希望能达到之前裸测的170MBps)
+* 上行传输的同时支持少量的下行数据。还没有测试饱和的下行带宽。
 
 # 应用场景
 
@@ -33,7 +32,7 @@ FTDI 245fifo interface
 
 下图是 IP 核的接口图，IP核顶层是 ./RTL/src/ftdi_245fifo.sv ，它还调用了 ./RTL/src/fifo/ 目录下的 4 个 .sv文件，除此之外没有其它依赖。
 
-![Image text](https://github.com/WangXuan95/FTDI 245fifo interface/blob/master/doc/ports.png)
+![Image text](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/ports.png)
 
 右侧是 FT232H/FT600 等芯片的接口，直接将引脚对应名称相连即可。 注意，在有些芯片手册上，例如 FT232H 手册(见./doc/FT232H.pdf第7页)，并不会直接告诉你芯片引脚与本IP核的对应关系，因为FTDI芯片有很多配置模式，只有在 245 sync fifo 模式下才能使用该 IP核，具体的引脚对应请见 ./doc/FT232H.pdf 第8页的表格。
 
@@ -41,7 +40,7 @@ FTDI 245fifo interface
 
 上图左侧的读接口和写接口的时序如下图：
 
-![Image text](https://github.com/WangXuan95/FTDI 245fifo interface/blob/master/doc/timing.png)
+![Image text](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/timing.png)
 
 如图，所有写信号应该在 **wr_clk** 的上升沿被捕获或更新。**wr_req** (写请求)与 **wr_gnt** (写允许)是一对握手信号，**wr_req** 置1时，如果 **wr_gnt** 变1，则这周期的 **wr_data **会成功的写入USB，如果 **wr_gnt** 是0，说明 USB 还没准备好接受当前的数据。
 
@@ -83,7 +82,7 @@ IP核有几个 parameter，如下表
 3) 在右侧选择 245 FIFO 模式
 4) 点击上方工具栏中的 **Program** ，图标为 **小闪电** 
 5) 弹出确认窗口，点击 Program。烧录该配置到 FT232H。
-![Image text](https://github.com/WangXuan95/FTDI 245fifo interface/blob/master/doc/ft232hconfig.png)
+![Image text](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/ft232hconfig.png)
 * **安装 python3 和 numpy**：笔者使用的是 **Python 3.5.2 |Anaconda 4.2.0 (64-bit)**
 * **安装 python ftd2xx库**: 在命令行运行 **pip install ftd2xx**
 * **准备硬件**: 见上一节，确保 FPGA 程序已经烧录
