@@ -115,8 +115,11 @@ IP核有几个 parameter，如下表
 # 拓展资料
 
 FT600 芯片资料：http://www.ftdichip.cn/Products/ICs/FT600.html
+
 FT600/FT601 软件示例： http://www.ftdichip.cn/Support/SoftwareExamples/FT60X.htm
+
 FT232H 芯片资料：http://www.ftdichip.cn/Products/ICs/FT232H.htm
+
 FT232H 软件示例：http://www.ftdichip.cn/Support/SoftwareExamples/CodeExamples.htm
 
 还可能支持的芯片（没有测试）：
