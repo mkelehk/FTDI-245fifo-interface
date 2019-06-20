@@ -42,7 +42,7 @@ FTDI 245fifo interface
 
 ![Image text](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/timing.png)
 
-如图，所有写信号应该在 **wr_clk** 的上升沿被捕获或更新。**wr_req** (写请求)与 **wr_gnt** (写允许)是一对握手信号，**wr_req** 置1时，如果 **wr_gnt** 变1，则这周期的 **wr_data **会成功的写入USB，如果 **wr_gnt** 是0，说明 USB 还没准备好接受当前的数据。
+如图，所有写信号应该在 **wr_clk** 的上升沿被捕获或更新。**wr_req** (写请求)与 **wr_gnt** (写允许)是一对握手信号，**wr_req** 置1时，如果 **wr_gnt** 变1，则这周期的 **wr_data** 会成功的写入USB，如果 **wr_gnt** 是0，说明 USB 还没准备好接受当前的数据。
 
 读时序与写时序非常相似。所有读信号应该在 **rd_clk** 的上升沿被捕获或更新。**rd_req** (读请求)与 **rd_gnt** (读允许)是一对握手信号，**rd_req** 置1时，如果 **rd_gnt** 变1，则这周期 **rd_data** 上会出现读出的数据，如果 **rd_gnt** 是0，说明当前无数据可读，往往是因为 PC 还没有发送数据给 FPGA。
 
@@ -74,7 +74,7 @@ IP核有几个 parameter，如下表
 
 本库提供几个简单的上位机 Python 测试程序，FT232H 相关的程序都在 **./Python/usb2.0/** 目录里。要运行这些程序，需要：
 
-* **安装 D2XX 驱动**：在 FTDI 官网上下载 D2XX Driver：https://www.ftdichip.com/Drivers/D2XX.htm，在 D2XX Drivers 那一栏的表格里。请根据你的电脑平台选择驱动下载并安装。
+* **安装 D2XX 驱动**：在 FTDI 官网上下载 D2XX Driver：https://www.ftdichip.com/Drivers/D2XX.htm ，在 D2XX Drivers 那一栏的表格里。请根据你的电脑平台选择驱动下载并安装。
 * **安装 FT_Prog**：https://www.ftdichip.com/Support/Utilities.htm#FT_PROG 。用于配置 FT232H 的工作模式。
 * **配置 FT232H**：将开发板的 FT232H USB 口插入电脑，如果成功安装了驱动则“设备管理器”里应该识别出“USB <-> Serial Converter"。打开 FT_Prog，按照下图的步骤设置：
 1) 点击 **Scan and Parse**，图标为**小放大镜** ，扫码出插在该电脑的所有 FTDI 芯片。根据具体信息找到 FT232H 对应的芯片。（**警告**：很多 FPGA 下载器，例如 Xilinx Digilent 下载器也会识别成 FT232H 芯片，请不要看错了，如果万一覆盖了下载器内部的程序，你的**下载器就废了**) 
@@ -99,9 +99,9 @@ IP核有几个 parameter，如下表
 
 本库提供几个简单的上位机 Python 测试程序，FT600 相关的程序都在 **./Python/usb3.0/** 目录里。要运行这些程序，需要：
 
-* **安装 D3XX 驱动**：在 FTDI 官网上下载 D3XX Driver：https://www.ftdichip.com/Drivers/D3XX.htm，在 D3XX Drivers 那一栏的表格里。请根据你的电脑平台选择驱动下载并安装。
-* **安装 python3 和 numpy**: 笔者还没研究出怎么用 64 位 python 跑 FT600，因此特地安装了 32位 python: **Python 3.7.2 (tags/v3.7.2:9a3ffc0492, Dec 23 2018, 22:20:52) [MSC v.1916 32 bit (Intel)] on win32**
-* **安装 python ftd2xx库**: 似乎没有办法直接用 pip install。而是在这里下载： http://www.ftdichip.cn/Support/SoftwareExamples/FT60X.htm。 最下方有 python 的支持。下载后解压，找到 setup.py ， 使用命令 **python setup.py install** 安装。（注意：要确保该命令中的 python 是上一步装好的 32 位的 python）
+* **安装 D3XX 驱动**：在 FTDI 官网上下载 D3XX Driver：https://www.ftdichip.com/Drivers/D3XX.htm ，在 D3XX Drivers 那一栏的表格里。请根据你的电脑平台选择驱动下载并安装。
+* **安装 python3 和 numpy**: 笔者还没研究出怎么用 64 位 python 跑 FT600，因此特地安装了 **32位 python 3.7.2**
+* **安装 python ftd2xx库**: 似乎没有办法直接用 pip install。而是在这里下载： http://www.ftdichip.cn/Support/SoftwareExamples/FT60X.htm 。 最下方有 python 的支持。下载后解压，找到 setup.py ， 使用命令 **python setup.py install** 安装。（注意：要确保该命令中的 python 是上一步装好的 32 位的 python）
 * **运行本库提供的程序**: 在本库的 **./Python/usb3.0/** 中运行程序，它们的功能如下表：
 
 | 文件名           | 功能    |
