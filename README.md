@@ -1,3 +1,6 @@
+![test](https://img.shields.io/badge/test-passing-green.svg)
+![docs](https://img.shields.io/badge/docs-passing-green.svg)
+
 FTDI 245fifo interface
 ===========================
 基于 SystemVerilog 的 FT232H、FT600 等 USB 芯片的高速通信 IP 核
