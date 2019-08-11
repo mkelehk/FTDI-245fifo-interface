@@ -47,7 +47,8 @@ FT600 loopback 示例
 
 | 文件名           | 功能    |
 | :--------       | :-----    |
+| [**usb_get_info.py**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/example/FT600_loopback/Python/usb_get_info.py) | 查看 FT600 芯片的配置信息    |
 | [**usb_loopback_simple.py**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/example/FT600_loopback/Python/usb_loopback_simple.py) | Host-PC 发送少量字节，然后接收，若接收到的数据与发送相同，则回环测试成功。    |
 | [**usb_loopback_mass.py**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/example/FT600_loopback/Python/usb_loopback_mass.py)   | Host-PC 发送大量字节，然后接收，若接收到的数据与发送相同，则回环测试成功。循环测试多次。  |
 
-另外：如果你使用了了 USB2.0 线缆，或者插在了 USB2.0 口上，Python 程序会报一个 Warning。这时 FT600 也能传输数据，只不过带宽受限制。
+另外：如果你使用了 USB2.0 线缆，或者插在了 USB2.0 口上，Python 程序会报一个 Warning。这时 FT600 也能传输数据，只不过带宽受限制。
