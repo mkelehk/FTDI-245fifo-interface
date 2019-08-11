@@ -47,7 +47,6 @@ FT600 massive send 示例
 
 | 文件名           | 功能    |
 | :--------:       | -----    |
-| [**usb_get_info.py**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/example/FT600_massive_send/Python/usb_get_info.py) | 查看 FT600 芯片的配置信息    |
 | [**usb_tx.py**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/example/FT600_massive_send/Python/usb_tx.py) | Host-PC 发送少量字节给 FT600，FPGA的 LED灯会相应的变化    |
 | [**usb_rx_check.py**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/example/FT600_massive_send/Python/usb_rx_check.py)   | 持续读取 FPGA 发来的数据，因为 FPGA 发送的数据是递增的，该程序对递增性进行判断，从而验证接收到的数据是否正确 |
 | [**usb_rx_rate.py**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/example/FT600_massive_send/Python/usb_rx_rate.py)  | 持续读取 FPGA 发来的数据，测量 持续传输的带宽 |
