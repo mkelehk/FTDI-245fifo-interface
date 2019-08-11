@@ -31,6 +31,6 @@
 
 ### 步骤5：复制 FTD3XX.DLL 文件
 
-复制 **步骤1** 中我们找到的 **FTD3XX.DLL 文件** 到 Python 根目录。例如在笔者的电脑上， Python 根目录是 **C:\Anaconda3\**
+复制 **步骤1** 中我们找到的 **FTD3XX.DLL 文件** 到 Python 根目录。例如在笔者的电脑上， Python 根目录是 **C:\\Anaconda3\\**
 
 至此，FT600 所需的 Python 运行环境已就绪。
