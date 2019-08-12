@@ -49,7 +49,7 @@ FTDI 245fifo interface
 
 ## Send Interface （类似 AXI-stream slave)
 
-**Send Interface** 是用户发送接口，数据流向是从 FPGA 到 Host-PC 。时序类似 **AXI-stream slave** ，如下图。注意以下几点：
+**Send Interface** 是用户发送接口，该接口用于从 FPGA 发送数据到 Host-PC 。时序类似 **AXI-stream slave** ，如下图左。注意以下几点：
 
 * **iclk 时钟** 由用户指定，时钟频率不限，所有信号应该在 **iclk** 上升沿更新或捕获。
 * **itvalid** (发送请求) 为 1 时，说明用户想发送一个数据到 Host-PC。
@@ -61,7 +61,7 @@ FTDI 245fifo interface
 
 ## Recieve Interface （类似 AXI-stream master)
 
-**Recieve Interface** 是用户接收接口，数据流向是从 Host-PC 到 FPGA 。时序类似 **AXI-stream master** ，如下图。注意以下几点：
+**Recieve Interface** 是用户接收接口，该接口用于接收从 Host-PC 到 FPGA 的数据。时序类似 **AXI-stream master** ，如上图右。注意以下几点：
 
 * **oclk 时钟** 由用户指定，时钟频率不限，所有信号应该在 **oclk** 上升沿更新或捕获。
 * **otvalid** (发送请求) 为 1 时，说明模块想发送一个数据给用户。otvalid=0 时，模块FIFO空，不能读出更多数据。
