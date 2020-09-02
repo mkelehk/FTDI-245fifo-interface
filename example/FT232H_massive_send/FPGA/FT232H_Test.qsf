@@ -83,7 +83,27 @@ set_location_assignment PIN_133 -to USB_WR
 set_location_assignment PIN_128 -to USB_OE
 set_location_assignment PIN_129 -to USB_CLK
 
+set_location_assignment PIN_86 -to PDM_CLK[0]
+set_location_assignment PIN_84 -to PDM_CLK[1]
+set_location_assignment PIN_80 -to PDM_CLK[2]
+set_location_assignment PIN_76 -to PDM_CLK[3]
+set_location_assignment PIN_74 -to PDM_CLK[4]
+set_location_assignment PIN_72 -to PDM_CLK[5]
+set_location_assignment PIN_70 -to PDM_CLK[6]
+set_location_assignment PIN_68 -to PDM_CLK[7]
+set_location_assignment PIN_66 -to PDM_CLK[8]
+set_location_assignment PIN_64 -to PDM_CLK[9]
 
+set_location_assignment PIN_87 -to PDM_DAT[0]
+set_location_assignment PIN_85 -to PDM_DAT[1]
+set_location_assignment PIN_83 -to PDM_DAT[2]
+set_location_assignment PIN_77 -to PDM_DAT[3]
+set_location_assignment PIN_75 -to PDM_DAT[4]
+set_location_assignment PIN_73 -to PDM_DAT[5]
+set_location_assignment PIN_71 -to PDM_DAT[6]
+set_location_assignment PIN_69 -to PDM_DAT[7]
+set_location_assignment PIN_67 -to PDM_DAT[8]
+set_location_assignment PIN_65 -to PDM_DAT[9]
 
 # -------------------------------------------------------------------------  end of pin assignment------------------------------------------------------
 set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF

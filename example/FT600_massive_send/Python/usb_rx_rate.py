@@ -39,7 +39,7 @@ if __name__ == '__main__':
         sys.exit()
 
     print("\n  Reading...")
-    data = bytes(65536*8)
+    data = bytes(65536)
     rx_cnt = 0
     
     time_start = time.time()

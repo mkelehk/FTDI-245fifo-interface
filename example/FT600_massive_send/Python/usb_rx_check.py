@@ -50,7 +50,7 @@ if __name__ == '__main__':
     time_start = time.time()
     for ii in range(4):
         for jj in range(4):
-            data = bytes(65536*8)
+            data = bytes(65536)
             usb.writePipe(0x02+0, bytes(tx_data), len(tx_data))  # While receiving massive data, scattered transmit a few data to verify the stability of FPGA code
             tx_data[-1] += 1
             rxc = usb.readPipe(0x82, data, len(data))

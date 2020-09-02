@@ -10,7 +10,7 @@ import ftd2xx
 datatype = np.uint8
 
 USB_DEVICE_NAME = b'USB <-> Serial Converter'
-BUFFER_SIZE = 65536 * 4
+BUFFER_SIZE = 65536
 
 
 def openUSB(name_byte_array):
