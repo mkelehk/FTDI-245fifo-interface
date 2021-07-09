@@ -17,7 +17,6 @@ module stream_async_fifo #(
 );
 
 initial itready = 1'b0;
-initial remptyn=1'b0;
 
 logic               rreq;
 logic               remptyn = 1'b0;
@@ -205,7 +204,7 @@ async_ram #(
 );
 
 fifo2axis #(
-    .DSIZE    ( DSIZE      )
+    .DSIZE    ( ODSIZE     )
 ) sfifo2axis_i (
     .rst_n    ( rst_n      ),
     .clk      ( clk        ),

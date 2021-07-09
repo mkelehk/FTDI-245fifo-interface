@@ -80,7 +80,8 @@ stream_sync_fifo #(   // tx sync fifo
     .otdata       ( txdata        ),
     .otvalid      ( txvalid       ),
     
-    .halffull     ( txfifo_sendimm)
+    .halffull     ( txfifo_sendimm),
+    .quarterfull  (               )
 );
 
 stream_async_fifo #(   // rx async fifo
@@ -114,7 +115,10 @@ stream_sync_fifo #(   // rx sync fifo
     
     .otready      ( otready       ),
     .otvalid      ( otvalid       ),
-    .otdata       ( otdata        )
+    .otdata       ( otdata        ),
+    
+    .halffull     (               ),
+    .quarterfull  (               )
 );
 
 // TXD or RXD controll FSM

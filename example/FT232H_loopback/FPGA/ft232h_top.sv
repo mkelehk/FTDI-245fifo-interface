@@ -44,7 +44,8 @@ ftdi_245fifo #(
     .usb_oe        ( USB_OE        ),
     .usb_rd        ( USB_RD        ),
     .usb_wr        ( USB_WR        ),
-    .usb_data      ( USB_D         )
+    .usb_data      ( USB_D         ),
+    .usb_be        (               )  // FT232H has no BE pins
 );
 
 endmodule
