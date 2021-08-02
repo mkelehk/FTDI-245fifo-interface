@@ -1,0 +1,88 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2013 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 32-bit
+# Version 13.1.0 Build 162 10/23/2013 SJ Full Version
+# Date created = 17:39:28  March 26, 2019
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		test_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE15E22I7
+set_global_assignment -name TOP_LEVEL_ENTITY top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:39:28  MARCH 26, 2019"
+set_global_assignment -name LAST_QUARTUS_VERSION 13.1
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP "-40"
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 100
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3V LVTTL"
+
+set_location_assignment PIN_128 -to clk
+
+set_location_assignment PIN_136 -to led
+
+set_location_assignment PIN_24 -to usb_rxf
+set_location_assignment PIN_25 -to usb_txe
+set_location_assignment PIN_28 -to usb_oe
+set_location_assignment PIN_30 -to usb_rd
+set_location_assignment PIN_31 -to usb_wr
+set_location_assignment PIN_33 -to usb_be[0]
+set_location_assignment PIN_32 -to usb_be[1]
+set_location_assignment PIN_53 -to usb_clk
+set_location_assignment PIN_39 -to usb_d[15]
+set_location_assignment PIN_42 -to usb_d[14]
+set_location_assignment PIN_43 -to usb_d[13]
+set_location_assignment PIN_44 -to usb_d[12]
+set_location_assignment PIN_46 -to usb_d[11]
+set_location_assignment PIN_49 -to usb_d[10]
+set_location_assignment PIN_50 -to usb_d[9]
+set_location_assignment PIN_51 -to usb_d[8]
+set_location_assignment PIN_58 -to usb_d[7]
+set_location_assignment PIN_59 -to usb_d[6]
+set_location_assignment PIN_60 -to usb_d[5]
+set_location_assignment PIN_61 -to usb_d[4]
+set_location_assignment PIN_64 -to usb_d[3]
+set_location_assignment PIN_65 -to usb_d[2]
+set_location_assignment PIN_66 -to usb_d[1]
+set_location_assignment PIN_67 -to usb_d[0]
+
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS OFF
+set_global_assignment -name SYSTEMVERILOG_FILE top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../RTL/ftdi_245fifo.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../RTL/stream_async_fifo.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../RTL/stream_wtrans.sv
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
