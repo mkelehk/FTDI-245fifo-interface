@@ -21,7 +21,7 @@
 
 ### 步骤3：安装 python3
 
-我使用的是 **Python 3.5.2|Anaconda 4.2.0 (64-bit)** 。如果你没有安装 Python3， 请前往 [Anaconda官网](https://www.anaconda.com/distribution/) 下载安装 Python3 ，版本号不一定要完全一样（我也不知道别的版本号会不会有问题，更新的版本大概率不会有问题，试试就知道了）。
+我使用的是 **Python 3.5.2|Anaconda 4.2.0 (64-bit)** 。如果你没有安装 Python3， 请前往 [Anaconda官网](https://www.anaconda.com/products/individual) 下载安装 Python3 ，版本号不一定要完全一样（我也不知道别的版本号会不会有问题，更新的版本大概率不会有问题，试试就知道了）。
 
 注意：如果你的计算机是 32-bit，请安装 32-bit 的 Python3，如果你的计算机是 64-bit，请安装 64-bit 的 Python3。
 

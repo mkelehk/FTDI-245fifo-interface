@@ -21,7 +21,7 @@ FT232H FPGA 示例工程
 
 请确保 FTDI 芯片的引脚被正确分配到 FPGA：
 
-* **FT232H/FT2232H** 芯片有多种工作模式。只有工作在 **sync-245-fifo 模式** 时，才能为本工程所用。该模式下的引脚命名见 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第9页、或 [FT2322H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf) 第9页。请将这些引脚分配到 Verilog 中的同名信号上。
+* **FT232H/FT2232H** 芯片有多种工作模式。只有工作在 **sync-245-fifo 模式** 时，才能为本工程所用。该模式下的引脚命名见 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第9页、或 [FT2232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf) 第9页。请将这些引脚分配到 Verilog 中的同名信号上。
 * 分配引脚时，你可以参考开发板供应商提供的引脚约束文件或原理图。
 * **sync-245-fifo 模式** 下， FT232H/FT2232H 的 **SIWU** 和 **PWRSAV** 这两个引脚在示例程序中未出现，这是因为我开发板上这两个引脚被上拉到高电平，不需要FPGA去驱动。如果在你的开发板上这两个引脚连接到了 FPGA 且没有上拉电阻，请在 Verilog 中将它们 assign 为 1。
 * 模块的 **usb_be** 是字节独热码，FT232H 和 FT2232H 没有这个信号，因此请忽略。

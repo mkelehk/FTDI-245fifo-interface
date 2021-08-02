@@ -3,7 +3,7 @@
 
 FTDI 245fifo controller
 ===========================
-[FT232H](https://ftdichip.com/Products/ICs/FT232H.htm)、[FT2232H](https://ftdichip.com/Products/ICs/FT2232H.htm)、[FT600](https://ftdichip.com/Products/ICs/FT600.htm) 等芯片的 **sync-245-fifo 模式** 控制器，实现 FPGA 与 Host-PC 的高速通信
+[FT232H](https://ftdichip.com/Products/ICs/FT232H.htm)、[FT2232H](https://ftdichip.com/Products/ICs/FT2232H.htm)、[FT600](https://ftdichip.com/Products/ICs/FT600.html) 等芯片的 **sync-245-fifo 模式** 控制器，实现 FPGA 与 Host-PC 的高速通信
 
 > 本库于 2021.8 重大更新，包括：
 >
@@ -57,7 +57,7 @@ FTDI 245fifo controller
 
 * 步骤1：在 Host-PC 上[安装 FTD3XX 驱动和 Python FTD3XX 库](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/Python_FTD3XX_guide.md)
 * 步骤2：部署 [FT600 FPGA 示例工程](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/FT600_FPGA_project.md) 
-* 步骤3：在 Host-PC 上运行 [FT232H Python 示例程序](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/FT600_run_python.md)
+* 步骤3：在 Host-PC 上运行 [FT600 Python 示例程序](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/FT600_run_python.md)
 
 如果你好奇于本模块的设计细节，或者想了解 FTDI USB 芯片的操作时序，可以运行 RTL 仿真，见：[仿真指导](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/testbench)
 
