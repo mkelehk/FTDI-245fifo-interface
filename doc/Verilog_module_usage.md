@@ -2,11 +2,11 @@
 
 本库包含 3 个设计文件，供 FPGA 开发者调用来开发自己的 USB 通信业务，见下表。
 
-| 文件名                                                       | 说明                               |
-| ------------------------------------------------------------ | ---------------------------------- |
-| [**RTL/ftdi_245fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/ftdi_245fifo.sv) | 顶层模块，开发者应该直接调用它。   |
-| [**RTL/stream_async_fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_async_fifo.sv) | 异步 FIFO，被顶层模块调用。        |
-| [**RTL/stream_wtrans.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_wtrans.sv) | 数据流位宽变换器，被顶层模块调用。 |
+| 文件名                                                       | 说明                                          |
+| ------------------------------------------------------------ | --------------------------------------------- |
+| [**RTL/ftdi_245fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/ftdi_245fifo.sv) | 顶层模块，开发者应该直接调用它。              |
+| [**RTL/stream_async_fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_async_fifo.sv) | 异步 FIFO，用于实现收发缓存，被顶层模块调用。 |
+| [**RTL/stream_wtrans.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_wtrans.sv) | 数据流位宽变换器，被顶层模块调用。            |
 
 下面讲解顶层模块 **ftdi_245fifo** 的使用方法，它的接口和参数（parameter）如下图：
 
