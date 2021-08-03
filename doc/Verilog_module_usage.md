@@ -4,11 +4,11 @@
 
 | 文件名                                                       | 说明                               |
 | ------------------------------------------------------------ | ---------------------------------- |
-| [**./RTL/ftdi_245fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/ftdi_245fifo.sv) | 顶层模块，开发者应该直接调用它。   |
-| [**./RTL/stream_async_fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_async_fifo.sv) | 异步 FIFO，被顶层模块调用。        |
-| [**./RTL/stream_wtrans.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_wtrans.sv) | 数据流位宽变换器，被顶层模块调用。 |
+| [**RTL/ftdi_245fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/ftdi_245fifo.sv) | 顶层模块，开发者应该直接调用它。   |
+| [**RTL/stream_async_fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_async_fifo.sv) | 异步 FIFO，被顶层模块调用。        |
+| [**RTL/stream_wtrans.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_wtrans.sv) | 数据流位宽变换器，被顶层模块调用。 |
 
-其中，顶层模块 **ftdi_245fifo** 的接口和参数(parameter)如下图：
+下面讲解顶层模块 **ftdi_245fifo** 的使用方法，它的接口和参数（parameter）如下图：
 
 ![模块接口图](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/ports.png)
 
@@ -18,9 +18,9 @@
 
 | parameter 名称 | 说明                                                         |
 | -------------- | ------------------------------------------------------------ |
-| TX_DEXP        | 决定了用户发送接口的数据宽度（即tx_data的宽度）：0对应8bit宽，1对应16bit宽，2对应32bit宽，3对应64bit宽，以此类推。可以任意设置，不受所选的 USB 芯片型号限制。 |
+| TX_DEXP        | 决定了用户发送接口的数据宽度（即tx_data的宽度）：0对应8bit宽，1对应16bit宽，2对应32bit宽，3对应64bit宽，以此类推。可以根据实际需要任意设置，不受所选的 USB 芯片型号限制。 |
 | TX_AEXP        | 决定了用户发送缓存的深度，深度=2^TX_AEXP。默认为10（即默认深度为1024），如果 FPGA BRAM 较大，该项可以设得更大，来提高突发性能。 |
-| RX_DEXP        | 决定了用户接收接口的数据宽度（即rx_data的宽度）：0对应8bit宽，1对应16bit宽，2对应32bit宽，3对应64bit宽，以此类推。可以任意设置，不受所选的 USB 芯片型号限制。 |
+| RX_DEXP        | 决定了用户接收接口的数据宽度（即rx_data的宽度）：0对应8bit宽，1对应16bit宽，2对应32bit宽，3对应64bit宽，以此类推。可以根据实际需要任意设置，不受所选的 USB 芯片型号限制。 |
 | RX_AEXP        | 决定了用户接收缓存的深度，深度=2^RX_AEXP。默认为10（即默认深度为1024），如果 FPGA BRAM 较大，该项可以设得更大，来提高突发性能。 |
 | C_DEXP         | 决定了USB数据信号（即usb_data）的宽度：0对应8bit宽，1对应16bit宽，2对应32bit宽，3对应64bit宽。应该根据所选的 USB 芯片型号而设置：FT232H设为0，FT600设为1，FT601设为2。 |
 
@@ -38,7 +38,7 @@ usb_rxf, usb_txe, usb_oe, usb_rd, usb_wr, usb_data, usb_be 这些信号应连接
 
 * tx_clk 的频率不限，tx_valid, tx_ready, tx_data 信号应该在 tx_clk 上升沿更新或捕获。
 * tx_valid (请求) 为 1 时，说明用户想发送一个数据到模块内部的发送缓存。同时，tx_data 应产生有效数据。
-* tx_ready (允许) 为 1 时，说明模块已经准备好接受发送数据。tx_ready=0 时，模块的发送缓存暂时满，不能接受更多数据。
+* tx_ready (允许) 为 1 时，说明模块已经准备好接收发送数据。tx_ready=0 时，模块的发送缓存暂时满，不能接收更多数据。
 * tx_valid 与 tx_ready 是一对握手信号。二者同时为 1 时， tx_data 写入缓存成功。
 * 与 AXI-stream 相比，这里没有 tlast 信号，因此用户发送接口没有包的概念，是单纯的流。
 
@@ -76,4 +76,4 @@ usb_rxf, usb_txe, usb_oe, usb_rd, usb_wr, usb_data, usb_be 这些信号应连接
 * rx_valid 与 rx_ready 是一对握手信号。二者同时为 1 时， rx_data 成功从接收缓存中取出。
 * 与 AXI-stream 相比，这里没有 tlast 信号，因此用户接收接口没有包的概念，是单纯的流。
 
-用户接收接口的时序类似用户发送接口（唯一的区别是方向相反），因此时序图不做赘述。
+用户接收接口的时序类似用户发送接口（唯一的区别是方向相反），因此不再赘述其时序图。

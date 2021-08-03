@@ -50,7 +50,7 @@ always @ (posedge iclk or negedge rstn)
 wire w_full  = wq2_rptr_grey == {~wptr_grey[ASIZE:ASIZE-1], wptr_grey[ASIZE-2:0]};
 wire r_empty = rq2_wptr_grey == rptr_grey;
 
-assign itready = ~w_full;
+assign itready = rstn & ~w_full;
 
 always @ (posedge iclk or negedge rstn)
     if(~rstn) begin
@@ -64,29 +64,25 @@ always @ (posedge iclk)
     if(itvalid & ~w_full)
         buffer[wptr[ASIZE-1:0]] <= itdata;
 
-reg             rdvalid;
+wire            rdready = ~otvalid | otready;
+reg             rdack;
 reg [DSIZE-1:0] rddata;
 reg [DSIZE-1:0] keepdata;
-assign otdata = rdvalid ? rddata : keepdata;
+assign otdata = rdack ? rddata : keepdata;
 
 always @ (posedge oclk or negedge rstn)
     if(~rstn) begin
         otvalid <= 1'b0;
-        rdvalid <= 1'b0;
+        rdack <= 1'b0;
         rptr <= '0;
         keepdata <= '0;
     end else begin
-        rdvalid <= 1'b0;
-        if(rdvalid) keepdata <= rddata;
-        if(~r_empty) begin
-            if(~otvalid | otready) begin
-                otvalid <= 1'b1;
-                rdvalid <= 1'b1;
-                rptr <= rptr + (1+ASIZE)'(1);
-            end
-        end else if(otready) begin
-            otvalid <= 1'b0;
-        end
+        otvalid <= ~r_empty | ~rdready;
+        rdack <= ~r_empty & rdready;
+        if(~r_empty & rdready)
+            rptr <= rptr + (1+ASIZE)'(1);
+        if(rdack)
+            keepdata <= rddata;
     end
 
 always @ (posedge oclk)
