@@ -18,7 +18,7 @@ FT600 loopback 示例
 
 请确保 FT600 芯片的引脚被正确分配到 FPGA：
 
-* **FT600** 芯片的引脚命名参加 [FT600 DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT600Q-FT601Q%20IC%20Datasheet.pdf) 第 7~10 页的表格。请将这些引脚分配到 Verilog 中的同名信号上。
+* **FT600** 芯片的引脚命名见 [FT600 DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT600Q-FT601Q%20IC%20Datasheet.pdf) 第 7~10 页的表格。请将这些引脚分配到 Verilog 中的同名信号上。
 * 分配引脚时，你可以参考开发板供应商提供的引脚约束文件或原理图。
 * FT600 的 **SIWU** 引脚在示例程序中未出现，这是因为我开发板上该引脚被上拉到高电平，不需要FPGA去驱动。如果在你的开发板上这两个引脚连接到了 FPGA 且没有上拉电阻，请在 Verilog 中将它们 assign 为 1。
 * FT600 的 **WAKE_UP** 引脚在示例程序中未出现，这是因为我的开发板上该引脚被下拉到GND，不需要FPGA去驱动。如果在你的开发板上这个引脚连接到了 FPGA 且没有下拉电阻，请在 Verilog 中将它 assign 为 0。
