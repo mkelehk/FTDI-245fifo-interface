@@ -24,13 +24,13 @@
 | RX_AEXP        | 决定了用户接收缓存的深度，深度=2^RX_AEXP。默认为10（即默认深度为1024），如果 FPGA BRAM 较大，该项可以设得更大，来提高突发性能。 |
 | C_DEXP         | 决定了USB数据信号（即usb_data）的宽度：0对应8bit宽，1对应16bit宽，2对应32bit宽，3对应64bit宽。应该根据所选的 USB 芯片型号而设置：FT232H设为0，FT600设为1，FT601设为2。 |
 
-## 连接 FTDI USB 芯片
+## 连接到 FTDI USB 芯片
 
-usb_rxf, usb_txe, usb_oe, usb_rd, usb_wr, usb_data, usb_be 这些信号应连接到 FTDI USB 芯片的管脚上。注意以下几点：
+usb_rxf, usb_txe, usb_oe, usb_rd, usb_wr, usb_data, usb_be 这些信号应约束到 FPGA 的引脚上，连接到 FTDI USB 芯片的管脚上。注意以下几点：
 
-* FTDI USB 芯片工作在 **sync-245-fifo 模式** 时，引脚名称参加芯片 Datasheet，以 FT232H 为例，见 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第9页。
+* FTDI USB 芯片工作在 **sync-245-fifo 模式** 时，引脚名称见芯片 Datasheet，以 FT232H 为例，见 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第9页。
 * usb_be 信号是字节独热码，仅 FT600 和 FT601 芯片有这个信号，使用其它芯片时请忽略。
-* 这些信号的时序图见 Datasheet，例如 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第23页。该时序由模块维护，不需要开发者关注。
+* 这些引脚的时序由模块维护，不需要开发者关注。如果你感兴趣，见芯片 Datasheet，例如 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第23页
 
 ## 用户发送接口
 
