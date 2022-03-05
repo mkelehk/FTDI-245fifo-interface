@@ -19,7 +19,7 @@ FTDI 245fifo controller
 
 下图是该模块的结构框图。
 
-![模块结构](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/structure.png)
+![模块结构](./doc/structure.png)
 
 ## 特点
 
@@ -44,22 +44,22 @@ FTDI 245fifo controller
 
 # QuickStart
 
-强烈建议首先阅读[模块使用说明](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/Verilog_module_usage.md)。了解该模块如何部署于 FPGA 中，来开发你自己的 USB 通信业务。
+强烈建议首先阅读[模块使用说明](./doc/Verilog_module_usage.md)。了解该模块如何部署于 FPGA 中，来开发你自己的 USB 通信业务。
 
 然后你可以运行我提供的使用案例，对于 FT232H，进行步骤：
 
-* 步骤1：在 Host-PC 上[安装 FTD2XX 驱动和 Python FTD2XX 库](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/Python_FTD2XX_guide.md)
-* 步骤2：针对每颗 FT232H，需要在初次使用时 [配置为 sync-245-fifo 模式](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/FT232H_config.md)
-* 步骤3：部署 [FT232H FPGA 示例工程](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/FT232H_FPGA_project.md) 
-* 步骤4：在 Host-PC 上运行 [FT232H Python 示例程序](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/FT232H_run_python.md)
+* 步骤1：在 Host-PC 上[安装 FTD2XX 驱动和 Python FTD2XX 库](./doc/Python_FTD2XX_guide.md)
+* 步骤2：针对每颗 FT232H，需要在初次使用时 [配置为 sync-245-fifo 模式](./doc/FT232H_config.md)
+* 步骤3：部署 [FT232H FPGA 示例工程](./doc/FT232H_FPGA_project.md) 
+* 步骤4：在 Host-PC 上运行 [FT232H Python 示例程序](./doc/FT232H_run_python.md)
 
 对于 FT600，进行步骤：
 
-* 步骤1：在 Host-PC 上[安装 FTD3XX 驱动和 Python FTD3XX 库](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/Python_FTD3XX_guide.md)
-* 步骤2：部署 [FT600 FPGA 示例工程](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/FT600_FPGA_project.md) 
-* 步骤3：在 Host-PC 上运行 [FT600 Python 示例程序](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/FT600_run_python.md)
+* 步骤1：在 Host-PC 上[安装 FTD3XX 驱动和 Python FTD3XX 库](./doc/Python_FTD3XX_guide.md)
+* 步骤2：部署 [FT600 FPGA 示例工程](./doc/FT600_FPGA_project.md) 
+* 步骤3：在 Host-PC 上运行 [FT600 Python 示例程序](./doc/FT600_run_python.md)
 
-如果你好奇于本模块的设计细节，或者想了解 FTDI USB 芯片的操作时序，可以运行 RTL 仿真，见：[仿真指导](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/testbench)
+如果你好奇于本模块的设计细节，或者想了解 FTDI USB 芯片的操作时序，可以运行 RTL 仿真，见：[仿真指导](./testbench)
 
 # 参考资料
 
