@@ -7,12 +7,12 @@ FT600 loopback 示例
 
 ## 建立工程
 
-如果你用 **Altera FPGA** ，则可以直接打开 [FT600_example/FPGA文件夹](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/FT600_example/FPGA) 中的 Quartus 工程。在工程中修改 FPGA 型号以适配你的 FPGA 板卡。
+如果你用 **Altera FPGA** ，则可以直接打开 [FT600_example/FPGA文件夹](../FT600_example/FPGA) 中的 Quartus 工程。在工程中修改 FPGA 型号以适配你的 FPGA 板卡。
 
 如果你用的不是 **Altera FPGA**，请使用以下源文件建立工程：
 
-* [FT600_example/FPGA/top.sv](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/FT600_example/FPGA/top.sv) : 作为工程的顶层
-* [RTL文件夹](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL) 里的所有 .sv 文件，它们会被 top.sv 调用。
+* [FT600_example/FPGA/top.sv](../FT600_example/FPGA/top.sv) : 作为工程的顶层
+* [RTL文件夹](../RTL) 里的所有 .sv 文件，它们会被 top.sv 调用。
 
 ## 分配引脚
 
