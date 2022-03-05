@@ -30,7 +30,7 @@ usb_rxf, usb_txe, usb_oe, usb_rd, usb_wr, usb_data, usb_be 这些信号应约束
 
 * FTDI USB 芯片工作在 **sync-245-fifo 模式** 时，引脚名称见芯片 Datasheet，以 FT232H 为例，见 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第9页。
 * usb_be 信号是字节独热码，仅 FT600 和 FT601 芯片有这个信号，使用其它芯片时请忽略。
-* 这些引脚的时序由模块维护，不需要开发者关注。如果你感兴趣，见芯片 Datasheet，例如 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第23页
+* 这些引脚的时序由模块维护，不需要你关注。如果你感兴趣，见芯片 Datasheet，例如 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第23页
 
 ## 用户发送接口
 
