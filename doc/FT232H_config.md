@@ -21,4 +21,4 @@
 
 > **警告**：在使用 **FT_Prog软件** 的时候，建议拔下计算机上所有的 FPGA 下载器。因为很多 FPGA 下载器，例如 Xilinx Digilent 下载器是 FT232H 芯片实现的，如果万一覆盖了下载器内部的程序，你的**下载器就废了**。
 
-![FT_Prog配置FT232H步骤图](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/ft232hconfig.png)
+![FT_Prog配置FT232H步骤图](./ft232hconfig.png)
