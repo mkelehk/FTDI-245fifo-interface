@@ -1,6 +1,6 @@
 # 运行 FT600 Python 示例通信程序
 
-我在 [FT600_example/Python文件夹](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/FT600_example/Python) 中编写了以下几个 Python 程序。FPGA 示例程序部署后，可以运行这些程序。
+我在 [FT600_example/Python文件夹](../FT600_example/Python) 中编写了以下几个 Python 程序。FPGA 示例程序部署后，可以运行这些程序。
 
 | 文件                    | 功能                                                         |
 | ----------------------- | ------------------------------------------------------------ |
