@@ -4,13 +4,13 @@
 
 | 文件名                                                       | 说明                                          |
 | ------------------------------------------------------------ | --------------------------------------------- |
-| [**RTL/ftdi_245fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/ftdi_245fifo.sv) | 顶层模块，开发者应该直接调用它。              |
-| [**RTL/stream_async_fifo.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_async_fifo.sv) | 异步 FIFO，用于实现收发缓存，被顶层模块调用。 |
-| [**RTL/stream_wtrans.sv**](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/RTL/stream_wtrans.sv) | 数据流位宽变换器，被顶层模块调用。            |
+| [**RTL/ftdi_245fifo.sv**](../RTL/ftdi_245fifo.sv) | 顶层模块，开发者应该直接调用它。              |
+| [**RTL/stream_async_fifo.sv**](../RTL/stream_async_fifo.sv) | 异步 FIFO，用于实现收发缓存，被顶层模块调用。 |
+| [**RTL/stream_wtrans.sv**](../RTL/stream_wtrans.sv) | 数据流位宽变换器，被顶层模块调用。            |
 
 下面讲解顶层模块 **ftdi_245fifo** 的使用方法，它的接口和参数（parameter）如下图：
 
-![模块接口图](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/ports.png)
+![模块接口图](./ports.png)
 
 ## 确定 parameter
 
