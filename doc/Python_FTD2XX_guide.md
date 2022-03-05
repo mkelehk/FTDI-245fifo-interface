@@ -9,7 +9,7 @@
 
 进入 [D2XX Driver 官网页面](https://www.ftdichip.com/Drivers/D2XX.htm) ，在 D2XX Drivers 那一栏的表格里，下载exe形式的驱动并安装。如下图。
 
-![FT232h驱动下载](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/ft232h_driver_download.png)
+![FT232h驱动下载](./ft232h_driver_download.png)
 
 同时，下载 DLL 压缩包（如上图）， 解压后在里面找到符合你计算机的 FTD2XX.DLL 文件（若为32-bit计算机，请找到32-bit(i386) DLL；若为64-bit计算机，请找到64-bit(amd64) DLL）。如果文件名是 FTD2XX64.DLL 等, 请一律重命名为 FTD2XX.DLL
 
@@ -17,7 +17,7 @@
 
 将开发板的 FT232H USB 口插入电脑，如果成功安装了驱动，则 **Windows设备管理器** 里应该识别出 **USB Serial Converter** 。如下图。
 
-![FT232H被识别](https://github.com/WangXuan95/FTDI-245fifo-interface/blob/master/doc/ft232h_ready.png)
+![FT232H被识别](./ft232h_ready.png)
 
 ### 步骤3：安装 Python3
 
