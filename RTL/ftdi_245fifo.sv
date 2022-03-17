@@ -9,7 +9,7 @@ module ftdi_245fifo #(
     parameter C_DEXP  = 0   // FTDI USB chip data width, 0=8bit, 1=16bit, 2=32bit ... for FT232H is 0, for FT600 is 1, for FT601 is 2.
 )(
     // reset, active low
-    input  wire                    rstn,
+    input  wire                    rstn_async,
     // user send interface (FPGA -> USB -> PC), AXI-stream slave liked.
     input  wire                    tx_clk,    // User-specified clock for send interface
     input  wire                    tx_valid,
@@ -26,6 +26,7 @@ module ftdi_245fifo #(
     inout        [(8<<C_DEXP)-1:0] usb_data,
     output wire  [(1<<C_DEXP)-1:0] usb_be // only FT600&FT601 have usb_be signal, ignore it when the chip do NOT have this signal
 );
+
 initial {usb_oe, usb_rd, usb_wr} = '1;
 
 localparam TXFIFO_DEXP = TX_DEXP > C_DEXP ? TX_DEXP : C_DEXP;
@@ -55,7 +56,6 @@ wire                        rxfifoo_valid;
 wire                        rxfifoo_ready;
 wire [(8<<RXFIFO_DEXP)-1:0] rxfifoo_data;
 
-reg                   fifo_rstn = 1'b0;
 enum logic [2:0] {RESET1, RESET2, RESET3, RXIDLE, RXOE, RXD, TXIDLE, TXD} stat = RESET1;
 
 reg                   s_rx_valid = '0;
@@ -65,11 +65,39 @@ reg                   s_tx_valid = '0;
 reg [(8<<C_DEXP)-1:0] usb_txdata = '0;
 
 
+// generate reset for tx_clk
+reg [1:0] rstn_tx_clk_shift = '0;
+reg       rstn_tx_clk = '0;
+always @ (posedge tx_clk or negedge rstn_async)
+    if(~rstn_async)
+        {rstn_tx_clk_shift, rstn_tx_clk} <= '0;
+    else
+        {rstn_tx_clk_shift, rstn_tx_clk} <= {1'b1, rstn_tx_clk_shift};
+
+// generate reset for rx_clk
+reg [1:0] rstn_rx_clk_shift = '0;
+reg       rstn_rx_clk = '0;
+always @ (posedge rx_clk or negedge rstn_async)
+    if(~rstn_async)
+        {rstn_rx_clk_shift, rstn_rx_clk} <= '0;
+    else
+        {rstn_rx_clk_shift, rstn_rx_clk} <= {1'b1, rstn_rx_clk_shift};
+
+// generate reset for usb_clk
+reg [1:0] rstn_usb_clk_shift = '0;
+reg       rstn_usb_clk = '0;
+always @ (posedge usb_clk or negedge rstn_async)
+    if(~rstn_async)
+        {rstn_usb_clk_shift, rstn_usb_clk} <= '0;
+    else
+        {rstn_usb_clk_shift, rstn_usb_clk} <= {1'b1, rstn_usb_clk_shift};
+
+
 stream_wtrans #(
     .I_DEXP    ( TX_DEXP        ),
     .O_DEXP    ( TXFIFO_DEXP    )
 ) txfifoi_wtrans_i (
-    .rstn      ( fifo_rstn      ),
+    .rstn      ( rstn_tx_clk    ),
     .clk       ( tx_clk         ),
     .itvalid   ( tx_valid       ),
     .itready   ( tx_ready       ),
@@ -83,11 +111,12 @@ stream_async_fifo #(
     .DSIZE     ( 8<<TXFIFO_DEXP ),
     .ASIZE     ( TX_AEXP        )
 ) txfifo_i (
-    .rstn      ( fifo_rstn      ),
+    .irstn     ( rstn_tx_clk    ),
     .iclk      ( tx_clk         ),
     .itvalid   ( txfifoi_valid  ),
     .itready   ( txfifoi_ready  ),
     .itdata    ( txfifoi_data   ),
+    .orstn     ( rstn_usb_clk   ),
     .oclk      ( usb_clk        ),
     .otvalid   ( txfifoo_valid  ),
     .otready   ( txfifoo_ready  ),
@@ -98,7 +127,7 @@ stream_wtrans #(
     .I_DEXP    ( TXFIFO_DEXP    ),
     .O_DEXP    ( C_DEXP         )
 ) txfifoo_wtrans_i (
-    .rstn      ( fifo_rstn      ),
+    .rstn      ( rstn_usb_clk   ),
     .clk       ( usb_clk        ),
     .itvalid   ( txfifoo_valid  ),
     .itready   ( txfifoo_ready  ),
@@ -112,7 +141,7 @@ stream_wtrans #(
     .I_DEXP    ( C_DEXP         ),
     .O_DEXP    ( RXFIFO_DEXP    )
 ) rxfifoi_wtrans_i (
-    .rstn      ( fifo_rstn      ),
+    .rstn      ( rstn_usb_clk   ),
     .clk       ( usb_clk        ),
     .itvalid   ( c_rx_valid     ),
     .itready   ( c_rx_ready     ),
@@ -126,11 +155,12 @@ stream_async_fifo #(
     .DSIZE     ( 8<<RXFIFO_DEXP ),
     .ASIZE     ( RX_AEXP        )
 ) rxfifo_i (
-    .rstn      ( fifo_rstn      ),
+    .irstn     ( rstn_usb_clk   ),
     .iclk      ( usb_clk        ),
     .itvalid   ( rxfifoi_valid  ),
     .itready   ( rxfifoi_ready  ),
     .itdata    ( rxfifoi_data   ),
+    .orstn     ( rstn_rx_clk    ),
     .oclk      ( rx_clk         ),
     .otvalid   ( rxfifoo_valid  ),
     .otready   ( rxfifoo_ready  ),
@@ -141,7 +171,7 @@ stream_wtrans #(
     .I_DEXP    ( RXFIFO_DEXP    ),
     .O_DEXP    ( RX_DEXP        )
 ) rxfifoo_wtrans_i (
-    .rstn      ( fifo_rstn      ),
+    .rstn      ( rstn_rx_clk    ),
     .clk       ( rx_clk         ),
     .itvalid   ( rxfifoo_valid  ),
     .itready   ( rxfifoo_ready  ),
@@ -152,14 +182,13 @@ stream_wtrans #(
 );
 
 
-always @ (posedge usb_clk or negedge rstn)
-    if(~rstn) begin
+always @ (posedge usb_clk or negedge rstn_usb_clk)
+    if(~rstn_usb_clk) begin
         {usb_oe, usb_rd, usb_wr} <= '1;
         {c_rx_valid, c_rx_data} <= '0;
         {s_rx_valid, s_rx_data} <= '0;
         s_tx_valid <= '0;
         usb_txdata <= '0;
-        fifo_rstn <= 1'b0;
         stat <= RESET1;
     end else begin
         if(c_rx_ready) begin
@@ -169,17 +198,14 @@ always @ (posedge usb_clk or negedge rstn)
         case(stat)
             RESET1: begin
                 {usb_oe, usb_rd, usb_wr} <= '1;
-                fifo_rstn <= 1'b0;
                 stat <= RESET2;
             end
             RESET2: begin
                 {usb_oe, usb_rd, usb_wr} <= '1;
-                fifo_rstn <= 1'b0;
                 stat <= RESET3;
             end
             RESET3: begin
                 {usb_oe, usb_rd, usb_wr} <= '1;
-                fifo_rstn <= 1'b1;
                 stat <= RXIDLE;
             end
             RXIDLE: begin

@@ -14,55 +14,50 @@ module stream_wtrans #(  // stream width transformer
     output wire [(8<<O_DEXP)-1:0] otdata
 );
 
-generate if(I_DEXP == O_DEXP) begin
-    
-    assign otvalid = rstn & itvalid;
-    assign itready = rstn & otready;
-    assign otdata = itdata;
-    
-end else begin
+localparam DEXP = I_DEXP > O_DEXP ? I_DEXP : O_DEXP;
 
-    localparam DEXP = I_DEXP > O_DEXP ? I_DEXP : O_DEXP;
+reg  [2*(8<<DEXP)-1:0] buffer;
 
-    reg  [2*(8<<DEXP)-1:0] buffer;
-    
-    reg  [1+DEXP-I_DEXP:0] wptr;
-    reg  [1+DEXP-O_DEXP:0] rptr;
-    wire          wmsb;
-    wire          rmsb;
-    wire [DEXP:0] wa;
-    wire [DEXP:0] ra;
-    
-    assign {wmsb, wa} = {wptr, {I_DEXP{1'b0}}};
-    assign {rmsb, ra} = {rptr, {O_DEXP{1'b0}}};
-    
-    wire empty =  {wmsb, wa[DEXP]} == {rmsb, ra[DEXP]};
-    wire full  = {~wmsb, wa[DEXP]} == {rmsb, ra[DEXP]};
-    
-    assign itready = rstn & ~full;
-    
-    always @ (posedge clk or negedge rstn)
-        if(~rstn) begin
-            buffer <= '0;
-            wptr <= '0;
-        end else begin
-            if(itvalid & ~full) begin
-                buffer[wa*8+:(8<<I_DEXP)] <= itdata;
-                wptr <= wptr + (2+DEXP-I_DEXP)'(1);
-            end
+reg  [1+DEXP-I_DEXP:0] wptr;
+reg  [1+DEXP-O_DEXP:0] rptr;
+wire          wmsb;
+wire          rmsb;
+wire [DEXP:0] wa;
+wire [DEXP:0] ra;
+
+generate if(I_DEXP==0) assign {wmsb, wa} = wptr;
+else                   assign {wmsb, wa} = {wptr, {I_DEXP{1'b0}}};
+endgenerate
+
+generate if(O_DEXP==0) assign {rmsb, ra} = rptr;
+else                   assign {rmsb, ra} = {rptr, {O_DEXP{1'b0}}};
+endgenerate
+
+wire empty =  {wmsb, wa[DEXP]} == {rmsb, ra[DEXP]};
+wire full  = {~wmsb, wa[DEXP]} == {rmsb, ra[DEXP]};
+
+assign itready = ~full;
+
+always @ (posedge clk or negedge rstn)
+    if(~rstn) begin
+        buffer <= '0;
+        wptr <= '0;
+    end else begin
+        if(itvalid & ~full) begin
+            buffer[wa*8+:(8<<I_DEXP)] <= itdata;
+            wptr <= wptr + (2+DEXP-I_DEXP)'(1);
         end
-    
-    assign otvalid = ~empty;
-    assign otdata = buffer[ra*8+:(8<<O_DEXP)];
-    
-    always @ (posedge clk or negedge rstn)
-        if(~rstn) begin
-            rptr <= '0;
-        end else begin
-            if(otready & ~empty)
-                rptr <= rptr + (2+DEXP-O_DEXP)'(1);
-        end
+    end
 
-end endgenerate
+assign otvalid = ~empty;
+assign otdata = buffer[ra*8+:(8<<O_DEXP)];
+
+always @ (posedge clk or negedge rstn)
+    if(~rstn) begin
+        rptr <= '0;
+    end else begin
+        if(otready & ~empty)
+            rptr <= rptr + (2+DEXP-O_DEXP)'(1);
+    end
 
 endmodule

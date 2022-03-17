@@ -72,7 +72,7 @@ ftdi_245fifo #(
     .RX_AEXP     ( 10          ), // RX FIFO depth = 2^RX_AEXP = 2^10 = 1024
     .C_DEXP      ( 0           )  // FTDI USB chip data width, 0=8bit, 1=16bit, 2=32bit ... for FT232H is 0, for FT600 is 1, for FT601 is 2.
 ) usb_rx_tx_i (
-    .rstn        ( rstn        ),
+    .rstn_async  ( rstn        ),
     .tx_clk      ( clk         ),
     .tx_valid    ( usbtx_valid ),
     .tx_ready    ( usbtx_ready ),

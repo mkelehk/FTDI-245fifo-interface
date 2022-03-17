@@ -4,11 +4,12 @@ module stream_async_fifo #(
     parameter   DSIZE = 8,
     parameter   ASIZE = 10
 )(
-    input  wire             rstn,
+    input  wire             irstn,
     input  wire             iclk,
     input  wire             itvalid,
     output wire             itready,
     input  wire [DSIZE-1:0] itdata,
+    input  wire             orstn,
     input  wire             oclk,
     output reg              otvalid,
     input  wire             otready,
@@ -17,32 +18,32 @@ module stream_async_fifo #(
 
 reg  [DSIZE-1:0] buffer [1<<ASIZE];  // may automatically synthesize to BRAM
 
-logic [ASIZE:0] wptr, wptr_grey, wq_wptr_grey, rq1_wptr_grey, rq2_wptr_grey;
-logic [ASIZE:0] rptr, rptr_grey, rq_rptr_grey, wq1_rptr_grey, wq2_rptr_grey;
+reg  [ASIZE:0] wptr='0, wq_wptr_grey='0, rq1_wptr_grey='0, rq2_wptr_grey='0;
+reg  [ASIZE:0] rptr='0, rq_rptr_grey='0, wq1_rptr_grey='0, wq2_rptr_grey='0;
 
-assign wptr_grey = (wptr >> 1) ^ wptr;
-assign rptr_grey = (rptr >> 1) ^ rptr;
+wire [ASIZE:0] wptr_grey = (wptr >> 1) ^ wptr;
+wire [ASIZE:0] rptr_grey = (rptr >> 1) ^ rptr;
 
-always @ (posedge iclk or negedge rstn)
-    if(~rstn)
+always @ (posedge iclk or negedge irstn)
+    if(~irstn)
         wq_wptr_grey <= '0;
     else
         wq_wptr_grey <= wptr_grey;
 
-always @ (posedge oclk or negedge rstn)
-    if(~rstn)
+always @ (posedge oclk or negedge orstn)
+    if(~orstn)
         {rq2_wptr_grey, rq1_wptr_grey} <= '0;
     else
         {rq2_wptr_grey, rq1_wptr_grey} <= {rq1_wptr_grey, wq_wptr_grey};
 
-always @ (posedge oclk or negedge rstn)
-    if(~rstn)
+always @ (posedge oclk or negedge orstn)
+    if(~orstn)
         rq_rptr_grey <= '0;
     else
         rq_rptr_grey <= rptr_grey;
 
-always @ (posedge iclk or negedge rstn)
-    if(~rstn)
+always @ (posedge iclk or negedge irstn)
+    if(~irstn)
         {wq2_rptr_grey, wq1_rptr_grey} <= '0;
     else
         {wq2_rptr_grey, wq1_rptr_grey} <= {wq1_rptr_grey, rq_rptr_grey};
@@ -50,10 +51,10 @@ always @ (posedge iclk or negedge rstn)
 wire w_full  = wq2_rptr_grey == {~wptr_grey[ASIZE:ASIZE-1], wptr_grey[ASIZE-2:0]};
 wire r_empty = rq2_wptr_grey == rptr_grey;
 
-assign itready = rstn & ~w_full;
+assign itready = ~w_full;
 
-always @ (posedge iclk or negedge rstn)
-    if(~rstn) begin
+always @ (posedge iclk or negedge irstn)
+    if(~irstn) begin
         wptr <= '0;
     end else begin
         if(itvalid & ~w_full)
@@ -70,8 +71,8 @@ reg [DSIZE-1:0] rddata;
 reg [DSIZE-1:0] keepdata;
 assign otdata = rdack ? rddata : keepdata;
 
-always @ (posedge oclk or negedge rstn)
-    if(~rstn) begin
+always @ (posedge oclk or negedge orstn)
+    if(~orstn) begin
         otvalid <= 1'b0;
         rdack <= 1'b0;
         rptr <= '0;
