@@ -42,7 +42,7 @@ ftdi_245fifo #(
     .RX_AEXP       ( 10            ),
     .C_DEXP        ( 0             )
 ) ftdi_245fifo_i (
-    .rstn          ( 1'b1          ),
+    .rstn_async    ( 1'b1          ),
     // user write interface, loopback connect to user read  interface
     .tx_clk        ( clk           ),
     .tx_valid      ( tvalid        ),
