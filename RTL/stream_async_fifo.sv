@@ -1,4 +1,10 @@
-`timescale 1ns/1ns
+
+//--------------------------------------------------------------------------------------------------------
+// Module  : stream_async_fifo
+// Type    : synthesizable, IP's sub module
+// Standard: SystemVerilog 2005 (IEEE1800-2005)
+// Function: stream async fifo
+//--------------------------------------------------------------------------------------------------------
 
 module stream_async_fifo #(
     parameter   DSIZE = 8,
@@ -15,6 +21,8 @@ module stream_async_fifo #(
     input  wire             otready,
     output wire [DSIZE-1:0] otdata
 );
+
+initial otvalid = 1'b0;
 
 reg  [DSIZE-1:0] buffer [1<<ASIZE];  // may automatically synthesize to BRAM
 
@@ -66,9 +74,9 @@ always @ (posedge iclk)
         buffer[wptr[ASIZE-1:0]] <= itdata;
 
 wire            rdready = ~otvalid | otready;
-reg             rdack;
+reg             rdack = '0;
 reg [DSIZE-1:0] rddata;
-reg [DSIZE-1:0] keepdata;
+reg [DSIZE-1:0] keepdata = '0;
 assign otdata = rdack ? rddata : keepdata;
 
 always @ (posedge oclk or negedge orstn)

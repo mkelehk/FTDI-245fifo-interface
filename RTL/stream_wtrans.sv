@@ -1,6 +1,12 @@
-`timescale 1ns/1ns
 
-module stream_wtrans #(  // stream width transformer
+//--------------------------------------------------------------------------------------------------------
+// Module  : stream_wtrans
+// Type    : synthesizable, IP's sub module
+// Standard: SystemVerilog 2005 (IEEE1800-2005)
+// Function: stream data width transformer
+//--------------------------------------------------------------------------------------------------------
+
+module stream_wtrans #(
     parameter I_DEXP = 0,  // input width,  0=1Byte, 1=2Byte, 2=4Byte, 3=8Bytes, 4=16Bytes, ...
     parameter O_DEXP = 0   // output width, 0=1Byte, 1=2Byte, 2=4Byte, 3=8Bytes, 4=16Bytes, ...
 )(
@@ -16,10 +22,10 @@ module stream_wtrans #(  // stream width transformer
 
 localparam DEXP = I_DEXP > O_DEXP ? I_DEXP : O_DEXP;
 
-reg  [2*(8<<DEXP)-1:0] buffer;
+reg  [2*(8<<DEXP)-1:0] buffer = '0;
 
-reg  [1+DEXP-I_DEXP:0] wptr;
-reg  [1+DEXP-O_DEXP:0] rptr;
+reg  [1+DEXP-I_DEXP:0] wptr = '0;
+reg  [1+DEXP-O_DEXP:0] rptr = '0;
 wire          wmsb;
 wire          rmsb;
 wire [DEXP:0] wa;

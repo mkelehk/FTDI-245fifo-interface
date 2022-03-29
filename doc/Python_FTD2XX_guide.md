@@ -31,7 +31,7 @@
 
 ### 步骤5：复制 FTD2XX.DLL 文件到 Python 环境中
 
-复制 **步骤1** 中我们找到的 **FTD2XX.DLL 文件** 到 Python 根目录。例如在我的电脑上， Python 根目录是 **C:\\Anaconda3\\**
+复制 **步骤1** 中我们找到的 **FTD2XX.DLL 文件** 到 Python 根目录。例如在我的电脑上， Python 根目录是 **C:/Anaconda3/**
 
 然后，可以运行以下 python 语句来验证安装：
 

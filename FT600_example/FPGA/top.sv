@@ -1,18 +1,27 @@
-`timescale 1ns/1ns
+
+//--------------------------------------------------------------------------------------------------------
+// Module  : top
+// Type    : synthesizable, FPGA's top, IP's example design
+// Standard: SystemVerilog 2005 (IEEE1800-2005)
+// Function: an example of ftdi_245fifo, connect FT600Q chip
+//           send increase data from FT600Q chip,
+//           recv data from FT600Q chip and check whether it is increasing
+//--------------------------------------------------------------------------------------------------------
 
 module top (
     input  wire         clk,   // main clock, 50MHz
     output wire         led,   // used to show whether the recv data meets expectations
-    // USB3.0 (FT600 chip)
+    // USB3.0 (chip: FT600Q)
     //output wire         usb_siwu,  // when this pin is exist and connect to FPGA, assign it to 1
     input  wire         usb_rxf, usb_txe, usb_clk,
     output wire         usb_oe, usb_rd, usb_wr,
     output       [ 1:0] usb_be,
     inout        [15:0] usb_d
 );
-// for power on resetting
-reg  [ 3:0] reset_cnt = '0;
-wire rstn = reset_cnt[3];
+
+// for power on reset
+reg  [ 3:0] reset_shift = '0;
+reg         rstn = '0;
 
 // USB send data stream
 wire        usbtx_valid;
@@ -33,8 +42,7 @@ assign led = led_cnt == 0;
 // power on reset
 //------------------------------------------------------------------------------------------------------------
 always @ (posedge clk)
-    if(~rstn)
-        reset_cnt <= reset_cnt + 4'd1;
+    {rstn, reset_shift} <= {reset_shift, 1'b1};
 
 
 
@@ -42,9 +50,13 @@ always @ (posedge clk)
 // USB TX behavior
 //------------------------------------------------------------------------------------------------------------
 assign usbtx_valid = 1'b1;                   // always try to send
-always @ (posedge clk)
-    if(usbtx_valid & usbtx_ready)            // if send success,
-        usbtx_data <= usbtx_data + 64'd1;    //    send data + 1
+always @ (posedge clk or negedge rstn)
+    if(~rstn) begin
+        usbtx_data <= '0;
+    end else begin
+        if(usbtx_valid & usbtx_ready)            // if send success,
+            usbtx_data <= usbtx_data + 64'd1;    //    send data + 1
+    end
 
 
 
@@ -52,15 +64,19 @@ always @ (posedge clk)
 // USB RX behavior
 //------------------------------------------------------------------------------------------------------------
 assign usbrx_ready = 1'b1;                   // recv always ready
-always @ (posedge clk) begin
-    if(led_cnt > 0)
-        led_cnt <= led_cnt - 1;
-    if(usbrx_valid & usbrx_ready) begin      // if recv success,
-        if(expect_data != usbrx_data)   //    if the data does not meet expectations
-            led_cnt <= 50000000;
-        expect_data <= usbrx_data + 8'd1;
+always @ (posedge clk or negedge rstn)
+    if(~rstn) begin
+        led_cnt <= 0;
+        expect_data <= '0;
+    end else begin
+        if(led_cnt > 0)
+            led_cnt <= led_cnt - 1;
+        if(usbrx_valid & usbrx_ready) begin      // if recv success,
+            if(expect_data != usbrx_data)        //    if the data does not meet expectations
+                led_cnt <= 50000000;
+            expect_data <= usbrx_data + 8'd1;
+        end
     end
-end
 
 
 //------------------------------------------------------------------------------------------------------------

@@ -1,6 +1,13 @@
-`timescale 1ns/1ns
 
-// for FTDI 245 fifo mode
+//--------------------------------------------------------------------------------------------------------
+// Module  : ftdi_245fifo
+// Type    : synthesizable, IP's top
+// Standard: SystemVerilog 2005 (IEEE1800-2005)
+// Function: FTDI USB chip's 245fifo mode controller
+//           include: FT232H, FT2232H, FT600Q, FT601Q, ...
+//           to realize USB communication
+//--------------------------------------------------------------------------------------------------------
+
 module ftdi_245fifo #(
     parameter TX_DEXP = 0,  // TX data stream width,  0=8bit, 1=16bit, 2=32bit, 3=64bit, 4=128bit ...
     parameter TX_AEXP = 10, // TX FIFO depth = 2^TX_AEXP
@@ -56,7 +63,7 @@ wire                        rxfifoo_valid;
 wire                        rxfifoo_ready;
 wire [(8<<RXFIFO_DEXP)-1:0] rxfifoo_data;
 
-enum logic [2:0] {RESET1, RESET2, RESET3, RXIDLE, RXOE, RXD, TXIDLE, TXD} stat = RESET1;
+enum logic [2:0] {RESET1, RESET2, RXIDLE, RXOE, RXD, TXIDLE, TXD} stat = RESET1;
 
 reg                   s_rx_valid = '0;
 reg [(8<<C_DEXP)-1:0] s_rx_data = '0;
@@ -202,10 +209,6 @@ always @ (posedge usb_clk or negedge rstn_usb_clk)
             end
             RESET2: begin
                 {usb_oe, usb_rd, usb_wr} <= '1;
-                stat <= RESET3;
-            end
-            RESET3: begin
-                {usb_oe, usb_rd, usb_wr} <= '1;
                 stat <= RXIDLE;
             end
             RXIDLE: begin
@@ -256,7 +259,7 @@ always @ (posedge usb_clk or negedge rstn_usb_clk)
                     stat <= RXOE;
                 end
             end
-            TXD : begin 
+            default : begin   // TXD
                 if(~usb_txe) begin
                     if(c_tx_valid) begin
                         usb_txdata <= c_tx_data;
