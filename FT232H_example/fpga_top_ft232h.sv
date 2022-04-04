@@ -1,23 +1,34 @@
 
 //--------------------------------------------------------------------------------------------------------
-// Module  : top
+// Module  : fpga_top_ft232h
 // Type    : synthesizable, FPGA's top, IP's example design
 // Standard: SystemVerilog 2005 (IEEE1800-2005)
-// Function: an example of ftdi_245fifo, connect FT600Q chip
-//           send increase data from FT600Q chip,
-//           recv data from FT600Q chip and check whether it is increasing
+// Function: an example of ftdi_245fifo, connect FT232H chip
+//           send increase data from FT232H chip,
+//           recv data from FT232H chip and check whether it is increasing
 //--------------------------------------------------------------------------------------------------------
 
-module top (
-    input  wire         clk,   // main clock, 50MHz
+module fpga_top_ft232h (
+    input  wire         clk,   // main clock, connect to on-board crystal oscillator
     output wire         led,   // used to show whether the recv data meets expectations
-    // USB3.0 (chip: FT600Q)
-    //output wire         usb_siwu,  // when this pin is exist and connect to FPGA, assign it to 1
-    input  wire         usb_rxf, usb_txe, usb_clk,
-    output wire         usb_oe, usb_rd, usb_wr,
-    output       [ 1:0] usb_be,
-    inout        [15:0] usb_d
+    
+    // USB2.0 HS (FT232H chip)
+    output wire         usb_resetn,  // to FT232H's pin34 (RESET#) , Comment out this line if this signal is not connected to FPGA.
+    output wire         usb_pwrsav,  // to FT232H's pin31 (PWRSAV#), Comment out this line if this signal is not connected to FPGA.
+    output wire         usb_siwu,    // to FT232H's pin28 (SIWU#)  , Comment out this line if this signal is not connected to FPGA.
+    input  wire         usb_clk,     // to FT232H's pin29 (CLKOUT)
+    input  wire         usb_rxf,     // to FT232H's pin21 (RXF#)
+    input  wire         usb_txe,     // to FT232H's pin25 (TXE#)
+    output wire         usb_oe,      // to FT232H's pin30 (OE#)
+    output wire         usb_rd,      // to FT232H's pin26 (RD#)
+    output wire         usb_wr,      // to FT232H's pin27 (WR#)
+    inout        [ 7:0] usb_data     // to FT232H's pin20~13 (ADBUS7~ADBUS0)
 );
+
+assign usb_resetn = 1'b1;  // 1=normal operation , Comment out this line if this signal is not connected to FPGA.
+assign usb_pwrsav = 1'b1;  // 1=normal operation , Comment out this line if this signal is not connected to FPGA.
+assign usb_siwu   = 1'b1;  // 1=send immidiently , Comment out this line if this signal is not connected to FPGA.
+
 
 // for power on reset
 reg  [ 3:0] reset_shift = '0;
@@ -84,11 +95,11 @@ always @ (posedge clk or negedge rstn)
 //------------------------------------------------------------------------------------------------------------
 ftdi_245fifo #(
     .TX_DEXP     ( 3           ), // TX data stream width,  0=8bit, 1=16bit, 2=32bit, 3=64bit, 4=128bit ...
-    .TX_AEXP     ( 10          ), // TX FIFO depth = 2^TX_AEXP = 2^10 = 1024
+    .TX_AEXP     ( 9           ), // TX FIFO depth = 2^TX_AEXP = 2^10 = 1024
     .RX_DEXP     ( 0           ), // RX data stream width,  0=8bit, 1=16bit, 2=32bit, 3=64bit, 4=128bit ...
     .RX_AEXP     ( 10          ), // RX FIFO depth = 2^RX_AEXP = 2^10 = 1024
-    .C_DEXP      ( 1           )  // FTDI USB chip data width, 0=8bit, 1=16bit, 2=32bit ... for FT232H is 0, for FT600 is 1, for FT601 is 2.
-) usb_rx_tx_i (
+    .C_DEXP      ( 0           )  // FTDI USB chip data width, 0=8bit, 1=16bit, 2=32bit ... for FT232H is 0, for FT600 is 1, for FT601 is 2.
+) ftdi_245fifo_i (
     .rstn_async  ( rstn        ),
     .tx_clk      ( clk         ),
     .tx_valid    ( usbtx_valid ),
@@ -104,11 +115,9 @@ ftdi_245fifo #(
     .usb_oe      ( usb_oe      ),
     .usb_rd      ( usb_rd      ),
     .usb_wr      ( usb_wr      ),
-    .usb_data    ( usb_d       ),
-    .usb_be      ( usb_be      )
+    .usb_data    ( usb_data    ),
+    .usb_be      (             )  // FT232H do not have BE signals
 );
-
-// assign usb_siwu = 1'b1;  // while working, usb_siwu=1, means send immidiently
 
 
 endmodule

@@ -14,7 +14,7 @@ if __name__ == '__main__':
     time_start = time.time()
     for ii in range(32):
         for jj in range(16):
-            recv_data, rxlength = usb.recv(65536)
+            recv_data, rxlength = usb.recv(4096)
             rxlength_total += rxlength
         print("    recv %dB" % rxlength_total)
     
