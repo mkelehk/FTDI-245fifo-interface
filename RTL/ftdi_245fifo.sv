@@ -1,166 +1,298 @@
 
-// for FTDI 245 fifo mode
+//--------------------------------------------------------------------------------------------------------
+// Module  : ftdi_245fifo
+// Type    : synthesizable, IP's top
+// Standard: SystemVerilog 2005 (IEEE1800-2005)
+// Function: FTDI USB chip's 245fifo mode controller
+//           include: FT232H, FT2232H, FT600Q, FT601Q, ...
+//           to realize USB communication
+//--------------------------------------------------------------------------------------------------------
+
 module ftdi_245fifo #(
-    parameter   INPUT_DSIZE = 1,  // User-specified SEND interface DATA width(in bytes). this parameter is NOT depend on FT232H chip, you can select 1, 2, 4 or 8...
-    parameter   INPUT_ASIZE = 10, // User-specified SEND interface FIFO Depth = 2^INPUT_ASIZE
-    parameter  OUTPUT_DSIZE = 1,  // User-specified RECV interface DATA width(in bytes). this parameter is NOT depend on FT232H chip, you can select 1, 2, 4 or 8...
-    parameter  OUTPUT_ASIZE = 9,  // User-specified RECV interface FIFO Depth = 2^INPUT_ASIZE
-    parameter    FTDI_DSIZE = 1   // FT232H data bus is 8bit width, this parameter is DEPEND on FT232H chip
+    parameter TX_DEXP = 0,  // TX data stream width,  0=8bit, 1=16bit, 2=32bit, 3=64bit, 4=128bit ...
+    parameter TX_AEXP = 10, // TX FIFO depth = 2^TX_AEXP
+    parameter RX_DEXP = 0,  // RX data stream width,  0=8bit, 1=16bit, 2=32bit, 3=64bit, 4=128bit ...
+    parameter RX_AEXP = 10, // RX FIFO depth = 2^RX_AEXP
+    parameter C_DEXP  = 0   // FTDI USB chip data width, 0=8bit, 1=16bit, 2=32bit ... for FT232H is 0, for FT600 is 1, for FT601 is 2.
 )(
     // reset, active low
-    input  logic rst_n,
-    // user send interface (FPGA -> USB -> PC), AXI-stream  slave liked.
-    input  logic                      iclk,    // User-specified clock for send interface
-    input  logic                      itvalid,
-    output logic                      itready,
-    input  logic [ INPUT_DSIZE*8-1:0] itdata,
+    input  wire                    rstn_async,
+    // user send interface (FPGA -> USB -> PC), AXI-stream slave liked.
+    input  wire                    tx_clk,    // User-specified clock for send interface
+    input  wire                    tx_valid,
+    output wire                    tx_ready,
+    input  wire [(8<<TX_DEXP)-1:0] tx_data,
     // user recv interface (PC -> USB -> FPGA), AXI-stream master liked.
-    input  logic                      oclk,    // User-specified clock for recv interface
-    output logic                      otvalid,
-    input  logic                      otready,
-    output logic [OUTPUT_DSIZE*8-1:0] otdata,
-    // FTDI 245FIFO interface, connect these signals to FTDI USB chip 
-    input  logic usb_rxf, usb_txe, usb_clk,
-    output logic usb_oe , usb_rd , usb_wr,
-    inout  logic [FTDI_DSIZE*8-1:0] usb_data,
-    inout  logic [FTDI_DSIZE  -1:0] usb_be // only FT600&FT601 have usb_be signal, ignore it when the chip do NOT have this signal
+    input  wire                    rx_clk,    // User-specified clock for recv interface
+    output wire                    rx_valid,
+    input  wire                    rx_ready,
+    output wire [(8<<RX_DEXP)-1:0] rx_data,
+    // FTDI 245FIFO interface, connect these signals to FTDI USB chip
+    input  wire                    usb_rxf, usb_txe, usb_clk,
+    output reg                     usb_oe , usb_rd , usb_wr,
+    inout        [(8<<C_DEXP)-1:0] usb_data,
+    output wire  [(1<<C_DEXP)-1:0] usb_be // only FT600&FT601 have usb_be signal, ignore it when the chip do NOT have this signal
 );
 
-logic tx_a2s_tready, tx_a2s_tvalid;
-logic [INPUT_DSIZE*8-1:0] tx_a2s_tdata;
-logic rx_a2s_tready, rx_a2s_tvalid;
-logic [ FTDI_DSIZE*8-1:0] rx_a2s_tdata;
+initial {usb_oe, usb_rd, usb_wr} = '1;
 
-logic txvalid, rxready, txfifo_sendimm;
-logic [FTDI_DSIZE*8-1:0] txdata;
-logic [ 3:0] fsm_cnt='0;
-logic [15:0] tx_cnt ='0;
-enum {RESET, IDLE, RXDOE, RXD, TXD} status = RESET;
-wire  fifos_rst_n = (status!=RESET);
+localparam TXFIFO_DEXP = TX_DEXP > C_DEXP ? TX_DEXP : C_DEXP;
+localparam RXFIFO_DEXP = RX_DEXP > C_DEXP ? RX_DEXP : C_DEXP;
 
-wire  txvalidready = ~usb_txe & txvalid;
-wire  rxvalidready = ~usb_rxf & rxready;
+wire                        txfifoi_valid;
+wire                        txfifoi_ready;
+wire [(8<<TXFIFO_DEXP)-1:0] txfifoi_data;
 
-assign usb_oe   = ~( (status==RXD) | (status==RXDOE) );
-assign usb_wr   = ~( (status==TXD) & txvalidready );
-assign usb_rd   = ~( (status==RXD) & rxvalidready );
-assign usb_be   = usb_wr ? 'z : '1;
-assign usb_data = usb_wr ? 'z : txdata;
+wire                        txfifoo_valid;
+wire                        txfifoo_ready;
+wire [(8<<TXFIFO_DEXP)-1:0] txfifoo_data;
 
-stream_async_fifo #(   // tx async fifo
-    .DSIZE        ( INPUT_DSIZE   ),
-    .ASIZE        ( 8             )
-) tx_async_fifo_i (
-    .rst_n        ( fifos_rst_n   ),
-    
-    .iclk         ( iclk          ),
-    .itvalid      ( itvalid       ),
-    .itready      ( itready       ),
-    .itdata       ( itdata        ),
+wire                        c_tx_valid;
+reg                         c_tx_ready;
+wire      [(8<<C_DEXP)-1:0] c_tx_data;
 
-    .oclk         ( usb_clk       ),
-    .otready      ( tx_a2s_tready ),
-    .otvalid      ( tx_a2s_tvalid ),
-    .otdata       ( tx_a2s_tdata  )
+reg                         c_rx_valid = '0;
+wire                        c_rx_ready;
+reg       [(8<<C_DEXP)-1:0] c_rx_data = '0;
+
+wire                        rxfifoi_valid;
+wire                        rxfifoi_ready;
+wire [(8<<RXFIFO_DEXP)-1:0] rxfifoi_data;
+
+wire                        rxfifoo_valid;
+wire                        rxfifoo_ready;
+wire [(8<<RXFIFO_DEXP)-1:0] rxfifoo_data;
+
+enum logic [2:0] {RESET1, RESET2, RXIDLE, RXOE, RXD, TXIDLE, TXD} stat = RESET1;
+
+reg                   s_rx_valid = '0;
+reg [(8<<C_DEXP)-1:0] s_rx_data = '0;
+reg                   s_tx_valid = '0;
+
+reg [(8<<C_DEXP)-1:0] usb_txdata = '0;
+
+
+// generate reset for tx_clk
+reg [1:0] rstn_tx_clk_shift = '0;
+reg       rstn_tx_clk = '0;
+always @ (posedge tx_clk or negedge rstn_async)
+    if(~rstn_async)
+        {rstn_tx_clk_shift, rstn_tx_clk} <= '0;
+    else
+        {rstn_tx_clk_shift, rstn_tx_clk} <= {1'b1, rstn_tx_clk_shift};
+
+// generate reset for rx_clk
+reg [1:0] rstn_rx_clk_shift = '0;
+reg       rstn_rx_clk = '0;
+always @ (posedge rx_clk or negedge rstn_async)
+    if(~rstn_async)
+        {rstn_rx_clk_shift, rstn_rx_clk} <= '0;
+    else
+        {rstn_rx_clk_shift, rstn_rx_clk} <= {1'b1, rstn_rx_clk_shift};
+
+// generate reset for usb_clk
+reg [1:0] rstn_usb_clk_shift = '0;
+reg       rstn_usb_clk = '0;
+always @ (posedge usb_clk or negedge rstn_async)
+    if(~rstn_async)
+        {rstn_usb_clk_shift, rstn_usb_clk} <= '0;
+    else
+        {rstn_usb_clk_shift, rstn_usb_clk} <= {1'b1, rstn_usb_clk_shift};
+
+
+stream_wtrans #(
+    .I_DEXP    ( TX_DEXP        ),
+    .O_DEXP    ( TXFIFO_DEXP    )
+) txfifoi_wtrans_i (
+    .rstn      ( rstn_tx_clk    ),
+    .clk       ( tx_clk         ),
+    .itvalid   ( tx_valid       ),
+    .itready   ( tx_ready       ),
+    .itdata    ( tx_data        ),
+    .otvalid   ( txfifoi_valid  ),
+    .otready   ( txfifoi_ready  ),
+    .otdata    ( txfifoi_data   )
 );
 
-stream_sync_fifo #(   // tx sync fifo
-    .IDSIZE       ( INPUT_DSIZE   ),
-    .ODSIZE       ( FTDI_DSIZE    ),
-    .ASIZE        ( INPUT_ASIZE   )
-) tx_sync_fifo_i (
-    .rst_n        ( fifos_rst_n   ),
-    .clk          ( usb_clk       ),
-    
-    .itvalid      ( tx_a2s_tvalid ),
-    .itready      ( tx_a2s_tready ),
-    .itdata       ( tx_a2s_tdata  ),
-    
-    .otready      ( ~usb_wr       ),
-    .otdata       ( txdata        ),
-    .otvalid      ( txvalid       ),
-    
-    .halffull     ( txfifo_sendimm)
+stream_async_fifo #(
+    .DSIZE     ( 8<<TXFIFO_DEXP ),
+    .ASIZE     ( TX_AEXP        )
+) txfifo_i (
+    .irstn     ( rstn_tx_clk    ),
+    .iclk      ( tx_clk         ),
+    .itvalid   ( txfifoi_valid  ),
+    .itready   ( txfifoi_ready  ),
+    .itdata    ( txfifoi_data   ),
+    .orstn     ( rstn_usb_clk   ),
+    .oclk      ( usb_clk        ),
+    .otvalid   ( txfifoo_valid  ),
+    .otready   ( txfifoo_ready  ),
+    .otdata    ( txfifoo_data   )
 );
 
-stream_async_fifo #(   // rx async fifo
-    .DSIZE        ( FTDI_DSIZE    ),
-    .ASIZE        ( 8             )
-) rx_async_fifo_i (
-    .rst_n        ( rst_n         ),
-    
-    .iclk         ( usb_clk       ),
-    .itvalid      ( ~usb_rd       ),
-    .itready      ( rxready       ),
-    .itdata       ( usb_data      ),
-
-    .oclk         ( oclk          ),
-    .otready      ( rx_a2s_tready ),
-    .otvalid      ( rx_a2s_tvalid ),
-    .otdata       ( rx_a2s_tdata  )
+stream_wtrans #(
+    .I_DEXP    ( TXFIFO_DEXP    ),
+    .O_DEXP    ( C_DEXP         )
+) txfifoo_wtrans_i (
+    .rstn      ( rstn_usb_clk   ),
+    .clk       ( usb_clk        ),
+    .itvalid   ( txfifoo_valid  ),
+    .itready   ( txfifoo_ready  ),
+    .itdata    ( txfifoo_data   ),
+    .otvalid   ( c_tx_valid     ),
+    .otready   ( c_tx_ready     ),
+    .otdata    ( c_tx_data      )
 );
 
-stream_sync_fifo #(   // rx sync fifo
-    .IDSIZE       ( FTDI_DSIZE    ),
-    .ODSIZE       ( OUTPUT_DSIZE  ),
-    .ASIZE        ( OUTPUT_ASIZE  )
-) rx_sync_fifo_i (
-    .rst_n        ( rst_n         ),
-    .clk          ( oclk          ),
-    
-    .itvalid      ( rx_a2s_tvalid ),
-    .itready      ( rx_a2s_tready ),
-    .itdata       ( rx_a2s_tdata  ),
-    
-    .otready      ( otready       ),
-    .otvalid      ( otvalid       ),
-    .otdata       ( otdata        )
+stream_wtrans #(
+    .I_DEXP    ( C_DEXP         ),
+    .O_DEXP    ( RXFIFO_DEXP    )
+) rxfifoi_wtrans_i (
+    .rstn      ( rstn_usb_clk   ),
+    .clk       ( usb_clk        ),
+    .itvalid   ( c_rx_valid     ),
+    .itready   ( c_rx_ready     ),
+    .itdata    ( c_rx_data      ),
+    .otvalid   ( rxfifoi_valid  ),
+    .otready   ( rxfifoi_ready  ),
+    .otdata    ( rxfifoi_data   )
 );
 
-// TXD or RXD controll FSM
-always @ (posedge usb_clk or negedge rst_n)
-    if(~rst_n) begin
-        fsm_cnt<= '0;
-        status <= RESET;
-        tx_cnt  = '0;
+stream_async_fifo #(
+    .DSIZE     ( 8<<RXFIFO_DEXP ),
+    .ASIZE     ( RX_AEXP        )
+) rxfifo_i (
+    .irstn     ( rstn_usb_clk   ),
+    .iclk      ( usb_clk        ),
+    .itvalid   ( rxfifoi_valid  ),
+    .itready   ( rxfifoi_ready  ),
+    .itdata    ( rxfifoi_data   ),
+    .orstn     ( rstn_rx_clk    ),
+    .oclk      ( rx_clk         ),
+    .otvalid   ( rxfifoo_valid  ),
+    .otready   ( rxfifoo_ready  ),
+    .otdata    ( rxfifoo_data   )
+);
+
+stream_wtrans #(
+    .I_DEXP    ( RXFIFO_DEXP    ),
+    .O_DEXP    ( RX_DEXP        )
+) rxfifoo_wtrans_i (
+    .rstn      ( rstn_rx_clk    ),
+    .clk       ( rx_clk         ),
+    .itvalid   ( rxfifoo_valid  ),
+    .itready   ( rxfifoo_ready  ),
+    .itdata    ( rxfifoo_data   ),
+    .otvalid   ( rx_valid       ),
+    .otready   ( rx_ready       ),
+    .otdata    ( rx_data        )
+);
+
+
+always @ (posedge usb_clk or negedge rstn_usb_clk)
+    if(~rstn_usb_clk) begin
+        {usb_oe, usb_rd, usb_wr} <= '1;
+        {c_rx_valid, c_rx_data} <= '0;
+        {s_rx_valid, s_rx_data} <= '0;
+        s_tx_valid <= '0;
+        usb_txdata <= '0;
+        stat <= RESET1;
     end else begin
-        case(status)
-        RESET: begin
-            if(fsm_cnt>4'd8) begin
-                fsm_cnt <= '0;
-                status  <= IDLE;
-            end else
-                fsm_cnt <= fsm_cnt+4'd1;
+        if(c_rx_ready) begin
+            {c_rx_valid, c_rx_data} <= {s_rx_valid, s_rx_data};
+            {s_rx_valid, s_rx_data} <= '0;
         end
-        IDLE: begin
-            if(txvalidready && tx_cnt[15])
-                status <= TXD;
-            if(~usb_rxf)
-                status <= RXDOE;
-            else if(~usb_txe && txfifo_sendimm)
-                status <= TXD;
-            if(txvalidready)
-                if(~tx_cnt[15]) tx_cnt++;
-        end
-        TXD: begin
-            tx_cnt = '0;
-            if(~usb_rxf | usb_txe)
-                status <= IDLE;
-        end
-        RXDOE: begin
-            tx_cnt = '0;
-            if( usb_rxf)
-                status <= IDLE;
-            else
-                status <= RXD;
-        end
-        RXD: begin
-            tx_cnt = '0;
-            if( usb_rxf)
-                status <= IDLE;
-        end
+        case(stat)
+            RESET1: begin
+                {usb_oe, usb_rd, usb_wr} <= '1;
+                stat <= RESET2;
+            end
+            RESET2: begin
+                {usb_oe, usb_rd, usb_wr} <= '1;
+                stat <= RXIDLE;
+            end
+            RXIDLE: begin
+                if(~usb_rxf & ~s_rx_valid & c_rx_ready) begin
+                    usb_oe <= 1'b0;
+                    stat <= RXOE;
+                end else if(~usb_txe & (s_tx_valid | c_tx_valid)) begin
+                    if(~s_tx_valid) begin
+                        usb_txdata <= c_tx_data;
+                        //assign c_tx_ready = 1'b1;
+                    end
+                    usb_wr <= 1'b0;
+                    stat <= TXD;
+                    s_tx_valid <= 1'b0;
+                end
+            end
+            RXOE : begin
+                usb_rd <= 1'b0;
+                stat <= RXD;
+            end
+            RXD : begin
+                if(~usb_rxf) begin
+                    if (~c_rx_valid | c_rx_ready) begin
+                        {c_rx_valid, c_rx_data} <= {1'b1, usb_data};
+                    end else begin
+                        {s_rx_valid, s_rx_data} <= {1'b1, usb_data};
+                        usb_oe <= 1'b1;
+                        usb_rd <= 1'b1;
+                        stat <= TXIDLE;
+                    end
+                end else begin
+                    usb_oe <= 1'b1;
+                    usb_rd <= 1'b1;
+                    stat <= TXIDLE;
+                end
+            end
+            TXIDLE: begin
+                if(~usb_txe & (s_tx_valid | c_tx_valid)) begin
+                    if(~s_tx_valid) begin
+                        usb_txdata <= c_tx_data;
+                        //assign c_tx_ready = 1'b1;
+                    end
+                    s_tx_valid <= 1'b0;
+                    usb_wr <= 1'b0;
+                    stat <= TXD;
+                end else if(~usb_rxf & ~s_rx_valid & c_rx_ready) begin
+                    usb_oe <= 1'b0;
+                    stat <= RXOE;
+                end
+            end
+            default : begin   // TXD
+                if(~usb_txe) begin
+                    if(c_tx_valid) begin
+                        usb_txdata <= c_tx_data;
+                        //assign c_tx_ready = 1'b1;
+                    end else begin
+                        usb_wr <= 1'b1;
+                        stat <= RXIDLE;
+                    end
+                end else begin
+                    s_tx_valid <= 1'b1;
+                    usb_wr <= 1'b1;
+                    stat <= RXIDLE;
+                end
+            end
         endcase
     end
+
+always_comb begin
+    c_tx_ready = 1'b0;
+    case(stat)
+        RXIDLE: if(~usb_rxf & ~s_rx_valid & c_rx_ready) begin
+        end else if(~usb_txe & ~s_tx_valid & c_tx_valid)
+            c_tx_ready = 1'b1;
+        TXIDLE: if(~usb_txe & ~s_tx_valid & c_tx_valid)
+            c_tx_ready = 1'b1;
+        TXD : if(~usb_txe & c_tx_valid) 
+            c_tx_ready = 1'b1;
+        default: begin end
+    endcase
+end
+
+assign usb_be   = usb_wr ? 'z : '1;
+assign usb_data = usb_wr ? 'z : usb_txdata;
 
 endmodule
 
