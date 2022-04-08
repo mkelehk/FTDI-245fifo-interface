@@ -267,7 +267,7 @@ FT600 是 USB3.0 Super Speed 通信芯片，理论速率为 200MBps ，本例实
 |      7      |    WR_N     |            usb_wr             |
 |      6      |   SIWU_N    |       usb_siwu \*  (=1)       |
 |     10      |   RESET_N   |      usb_resetn \*  (=1)      |
-|     11      |  WAKEUP_N   |     usb_pwrsav \*\*  (=0)     |
+|     11      |  WAKEUP_N   |     usb_wakeupn \*\*  (=0)    |
 |     12      |    GPIO0    |     usb_gpio0 \*\*  (=0)      |
 |     13      |    GPIO1    |     usb_gpio1 \*\*  (=0)      |
 
