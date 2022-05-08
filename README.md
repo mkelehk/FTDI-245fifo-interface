@@ -46,7 +46,7 @@ FTDI 245fifo controller
 
 # 模块说明
 
-本库的设计代码是 RTL 目录中的 ftdi_245fifo.sv，供 FPGA 开发者调用来开发自己的 USB 通信业务，它的接口和参数如**图2**。
+本库的设计代码是 RTL 目录中的 [ftdi_245fifo.sv](./RTL)，供 FPGA 开发者调用来开发自己的 USB 通信业务，它的接口和参数如**图2**。
 
 | ![module_ports](./figures/ports.png) |
 | :----------------------------------: |
@@ -150,32 +150,32 @@ FT232H 是 USB2.0 High Speed 通信芯片，理论速率为 60MBps ，本例实�
 
 请使用以下源文件建立 FPGA 工程：
 
-* [FT232H_example/fpga_top.sv](./FT232H_example/fpga_top.sv) ：作为工程的顶层。
-* [RTL](./RTL) 文件夹里 ftdi_245fifo.sv 、 stream_async_fifo.sv 、 stream_wtrans.sv ：它们会被 fpga_top.sv 调用。
+* [RTL](./RTL) 文件夹里的 fpga_top_example_ft232h.sv ：作为工程的顶层。
+* [RTL](./RTL) 文件夹里的 ftdi_245fifo.sv 、 stream_async_fifo.sv 、 stream_wtrans.sv ：它们会被顶层调用。
 
-然后，请在 FPGA 工程中进行引脚约束，具体而言，你需要查看电路板的原理图（或开发板配套资料），了解 FT232H 的各引脚被连接到了 FPGA 的哪些引脚号上；然后，把 FPGA 工程的顶层（也就是 fpga_top.sv）的信号分配到对应的 FPGA 引脚号上，使得这些信号与 FT232H 的引脚对应起来。对应关系见下表（该表简化自 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第9页）：
+然后，请在 FPGA 工程中进行引脚约束，具体而言，你需要查看电路板的原理图（或开发板配套资料），了解 FT232H 的各引脚被连接到了 FPGA 的哪些引脚号上；然后，把 FPGA 工程的顶层（也就是 fpga_top_example_ft232h.sv）的信号分配到对应的 FPGA 引脚号上，使得这些信号与 FT232H 的引脚对应起来。对应关系见下表（该表简化自 [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) 第9页）：
 
-| FT232H引脚号 | FT232H引脚名 | FT232H引脚名 (245fifo 模式下) | 应约束到 fpga_top.sv 的信号名 |
-| :----------: | :----------: | :---------------------------: | :---------------------------: |
-|      13      |    ADBUS0    |              D0               |          usb_data[0]          |
-|      14      |    ADBUS1    |              D1               |          usb_data[1]          |
-|      15      |    ADBUS2    |              D2               |          usb_data[2]          |
-|      16      |    ADBUS3    |              D3               |          usb_data[3]          |
-|      17      |    ADBUS4    |              D4               |          usb_data[4]          |
-|      18      |    ADBUS5    |              D5               |          usb_data[5]          |
-|      19      |    ADBUS6    |              D6               |          usb_data[6]          |
-|      20      |    ADBUS7    |              D7               |          usb_data[7]          |
-|      21      |    ACBUS0    |             RXF\#             |            usb_rxf            |
-|      25      |    ACBUS1    |             TXE\#             |            usb_txe            |
-|      26      |    ACBUS2    |             RD\#              |            usb_rd             |
-|      27      |    ACBUS3    |             WR\#              |            usb_wr             |
-|      28      |    ACBUS4    |            SIWU\#             |       usb_siwu \*  (=1)       |
-|      29      |    ACBUS5    |            CLKOUT             |            usb_clk            |
-|      30      |    ACBUS6    |             OE\#              |            usb_oe             |
-|      31      |    ACBUS7    |           PWRSAV\#            |      usb_pwrsav \*  (=1)      |
-|      34      |   RESET\#    |            RESET\#            |      usb_resetn \*  (=1)      |
+| FT232H引脚号 | FT232H引脚名 | FT232H引脚名 (245fifo 模式下) | 应约束到顶层的信号名 |
+| :----------: | :----------: | :---------------------------: | :------------------: |
+|      13      |    ADBUS0    |              D0               |     usb_data[0]      |
+|      14      |    ADBUS1    |              D1               |     usb_data[1]      |
+|      15      |    ADBUS2    |              D2               |     usb_data[2]      |
+|      16      |    ADBUS3    |              D3               |     usb_data[3]      |
+|      17      |    ADBUS4    |              D4               |     usb_data[4]      |
+|      18      |    ADBUS5    |              D5               |     usb_data[5]      |
+|      19      |    ADBUS6    |              D6               |     usb_data[6]      |
+|      20      |    ADBUS7    |              D7               |     usb_data[7]      |
+|      21      |    ACBUS0    |             RXF\#             |       usb_rxf        |
+|      25      |    ACBUS1    |             TXE\#             |       usb_txe        |
+|      26      |    ACBUS2    |             RD\#              |        usb_rd        |
+|      27      |    ACBUS3    |             WR\#              |        usb_wr        |
+|      28      |    ACBUS4    |            SIWU\#             |  usb_siwu \*  (=1)   |
+|      29      |    ACBUS5    |            CLKOUT             |       usb_clk        |
+|      30      |    ACBUS6    |             OE\#              |        usb_oe        |
+|      31      |    ACBUS7    |           PWRSAV\#            | usb_pwrsav \*  (=1)  |
+|      34      |   RESET\#    |            RESET\#            | usb_resetn \*  (=1)  |
 
-> **\*注**：上表中 SIWU\# 、 PWRSAV\# 和 RESET\# 实际上是永远被拉为高电平的（你也可以看到在 fpga_top.sv 中它们被 assign 为 1），因此有些板子的设计直接用电阻把它们拉到高电平上，而没有连接到 FPGA ，对于这种情况，就不用在 FPGA 约束它们的引脚，并直接在 fpga_top.sv 中注释掉与它们相关的语句即可。
+> **\*注**：上表中 SIWU\# 、 PWRSAV\# 和 RESET\# 实际上是永远被拉为高电平的（你也可以看到在 fpga_top_example_ft232h.sv 中它们被 assign 为 1），因此有些板子的设计直接用电阻把它们拉到高电平上，而没有连接到 FPGA ，对于这种情况，就不用在 FPGA 约束它们的引脚，并直接在 fpga_top_example_ft232h.sv 中注释掉与它们相关的语句即可。
 >
 > **注**：对于 FT2232H ，请以 [FT2232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf) 第9页为准。
 
@@ -188,9 +188,9 @@ FT232H 是 USB2.0 High Speed 通信芯片，理论速率为 60MBps ，本例实�
 在 FPGA 工程中，另外注意以下几点：
 
 * `usb_clk` 频率为 60MHz 。你可以把 `usb_clk` 约束为 60MHz，来指导时序分析。实际上，即使不加该约束也不影响正常运行。
-* fpga_top.sv 中的主时钟 `clk` 要连在 FPGA 板的晶振上，频率不限，比如 24MHz, 50MHz, 100MHz 均可。
+* fpga_top_example_ft232h.sv 中的主时钟 `clk` 要连在 FPGA 板的晶振上，频率不限，比如 24MHz, 50MHz, 100MHz 均可。
 * led 引脚连一颗 LED 灯（不是必须的），它平常保持 1，当发现接收到的数据不是递增的时，会变成 0 并保持一秒。
-* 请关注本例 fpga_top.sv 中 ftdi_245fifo 模块的参数配置：
+* 请关注本例 fpga_top_example_ft232h.sv 中 ftdi_245fifo 模块的参数配置：
   * `C_DEXP` 被设为 0，这是因为 FT232H 的数据线是 8bit 的。
   * `TX_DEXP` 被设为 3，因此用户发送接口的 `tx_data` 信号的宽度是 64bit （这只是本例的取值，你可以根据你的项目需要来修改）。
   * `RX_DEXP` 参数被设为 0，因此用户接收接口的 `rx_data` 信号的宽度是 8bit （这只是本例的取值，你可以根据你的项目需要来修改）。
@@ -218,7 +218,7 @@ FT232H 是 USB2.0 High Speed 通信芯片，理论速率为 60MBps ，本例实�
 
 ## 步骤4：在电脑上运行通信程序
 
-我在 [FT232H_example/Python](./FT232H_example/Python) 文件夹中提供了以下几个 Python 程序，它们会通过 FT232H 与 FPGA 进行通信。运行这些程序之前，请确保 FT232H 已经按照步骤3被烧录为 245fifo 模式，且 FPGA 中下载了步骤2中建立的工程。
+我在 [python_ft232h](./python_ft232h) 文件夹中提供了以下几个 Python 程序，它们会通过 FT232H 与 FPGA 进行通信。运行这些程序之前，请确保 FT232H 已经按照步骤3被烧录为 245fifo 模式，且 FPGA 中下载了步骤2中建立的工程。
 
 | 文件名                  | 功能                                                         |
 | ----------------------- | ------------------------------------------------------------ |
@@ -242,46 +242,46 @@ FT600 是 USB3.0 Super Speed 通信芯片，理论速率为 200MBps ，本例实
 
 请使用以下源文件建立 FPGA 工程：
 
-* [FT600_example/fpga_top.sv](./FT600_example/fpga_top.sv) ：作为工程的顶层。
-* [RTL](./RTL) 文件夹里 ftdi_245fifo.sv 、 stream_async_fifo.sv 、 stream_wtrans.sv ：它们会被 fpga_top.sv 调用。
+* [RTL](./RTL) 文件夹里 fpga_top_example_ft600.sv ：作为工程的顶层。
+* [RTL](./RTL) 文件夹里 ftdi_245fifo.sv 、 stream_async_fifo.sv 、 stream_wtrans.sv ：它们会被顶层调用。
 
-然后，请在 FPGA 工程中进行引脚约束，具体而言，你需要查看电路板的原理图（或开发板配套资料），了解 FT600 的各引脚被连接到了 FPGA 的哪些引脚号上；然后，把 FPGA 工程的顶层（也就是 fpga_top.sv）的信号分配到对应的 FPGA 引脚号上，使得这些信号与 FT600 的引脚对应起来。对应关系见下表（该表简化自 [FT600 DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT600Q-FT601Q%20IC%20Datasheet.pdf) 第 7\~10 页）：
+然后，请在 FPGA 工程中进行引脚约束，具体而言，你需要查看电路板的原理图（或开发板配套资料），了解 FT600 的各引脚被连接到了 FPGA 的哪些引脚号上；然后，把 FPGA 工程的顶层（也就是 fpga_top_example_ft600.sv）的信号分配到对应的 FPGA 引脚号上，使得这些信号与 FT600 的引脚对应起来。对应关系见下表（该表简化自 [FT600 DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT600Q-FT601Q%20IC%20Datasheet.pdf) 第 7\~10 页）：
 
-| FT600引脚号 | FT600引脚名 | 应约束到 fpga_top.sv 的信号名 |
-| :---------: | :---------: | :---------------------------: |
-|     33      |   DATA_0    |          usb_data[0]          |
-|     34      |   DATA_1    |          usb_data[1]          |
-|     35      |   DATA_2    |          usb_data[2]          |
-|     36      |   DATA_3    |          usb_data[3]          |
-|     39      |   DATA_4    |          usb_data[4]          |
-|     40      |   DATA_5    |          usb_data[5]          |
-|     41      |   DATA_6    |          usb_data[6]          |
-|     42      |   DATA_7    |          usb_data[7]          |
-|     45      |   DATA_8    |          usb_data[8]          |
-|     46      |   DATA_9    |          usb_data[9]          |
-|     47      |   DATA_10   |         usb_data[10]          |
-|     48      |   DATA_11   |         usb_data[11]          |
-|     53      |   DATA_12   |         usb_data[12]          |
-|     54      |   DATA_13   |         usb_data[13]          |
-|     55      |   DATA_14   |         usb_data[14]          |
-|     56      |   DATA_15   |         usb_data[15]          |
-|      2      |    BE_0     |           usb_be[0]           |
-|      3      |    BE_1     |           usb_be[1]           |
-|     43      |   CLKOUT    |            usb_clk            |
-|      5      |    RXF_N    |            usb_rxf            |
-|      4      |    TXE_N    |            usb_txe            |
-|      9      |    OE_N     |            usb_oe             |
-|      8      |    RD_N     |            usb_rd             |
-|      7      |    WR_N     |            usb_wr             |
-|      6      |   SIWU_N    |       usb_siwu \*  (=1)       |
-|     10      |   RESET_N   |      usb_resetn \*  (=1)      |
-|     11      |  WAKEUP_N   |     usb_wakeupn \*\*  (=0)    |
-|     12      |    GPIO0    |     usb_gpio0 \*\*  (=0)      |
-|     13      |    GPIO1    |     usb_gpio1 \*\*  (=0)      |
+| FT600引脚号 | FT600引脚名 |  应约束到顶层的信号名  |
+| :---------: | :---------: | :--------------------: |
+|     33      |   DATA_0    |      usb_data[0]       |
+|     34      |   DATA_1    |      usb_data[1]       |
+|     35      |   DATA_2    |      usb_data[2]       |
+|     36      |   DATA_3    |      usb_data[3]       |
+|     39      |   DATA_4    |      usb_data[4]       |
+|     40      |   DATA_5    |      usb_data[5]       |
+|     41      |   DATA_6    |      usb_data[6]       |
+|     42      |   DATA_7    |      usb_data[7]       |
+|     45      |   DATA_8    |      usb_data[8]       |
+|     46      |   DATA_9    |      usb_data[9]       |
+|     47      |   DATA_10   |      usb_data[10]      |
+|     48      |   DATA_11   |      usb_data[11]      |
+|     53      |   DATA_12   |      usb_data[12]      |
+|     54      |   DATA_13   |      usb_data[13]      |
+|     55      |   DATA_14   |      usb_data[14]      |
+|     56      |   DATA_15   |      usb_data[15]      |
+|      2      |    BE_0     |       usb_be[0]        |
+|      3      |    BE_1     |       usb_be[1]        |
+|     43      |   CLKOUT    |        usb_clk         |
+|      5      |    RXF_N    |        usb_rxf         |
+|      4      |    TXE_N    |        usb_txe         |
+|      9      |    OE_N     |         usb_oe         |
+|      8      |    RD_N     |         usb_rd         |
+|      7      |    WR_N     |         usb_wr         |
+|      6      |   SIWU_N    |   usb_siwu \*  (=1)    |
+|     10      |   RESET_N   |  usb_resetn \*  (=1)   |
+|     11      |  WAKEUP_N   | usb_wakeupn \*\*  (=0) |
+|     12      |    GPIO0    |  usb_gpio0 \*\*  (=0)  |
+|     13      |    GPIO1    |  usb_gpio1 \*\*  (=0)  |
 
-> **\*注**：上表中 SIWU_N 和 RESET_N 实际上是永远被拉为高电平的（你也可以看到在 fpga_top.sv 中它们被 assign 为 1），因此有些板子的设计直接用电阻把它们拉到高电平上，而没有连接到 FPGA ，对于这种情况，就不用在 FPGA 约束它们的引脚，并直接在 fpga_top.sv 中注释掉与它们相关的语句即可。
+> **\*注**：上表中 SIWU_N 和 RESET_N 实际上是永远被拉为高电平的（你也可以看到在 fpga_top_example_ft600.sv 中它们被 assign 为 1），因此有些板子的设计直接用电阻把它们拉到高电平上，而没有连接到 FPGA ，对于这种情况，就不用在 FPGA 约束它们的引脚，并直接在 fpga_top_example_ft600.sv 中注释掉与它们相关的语句即可。
 >
-> **\*\*注**：上表中 WAKEUP_N 、 GPIO0 和 GPIO1 实际上是永远被拉为低电平的（你也可以看到在 fpga_top.sv 中它们被 assign 为 0），因此有些板子的设计直接用电阻把它们拉到GND上，而没有连接到 FPGA ，对于这种情况，就不用在 FPGA 约束它们的引脚，并直接在 fpga_top.sv 中注释掉与它们相关的语句即可。
+> **\*\*注**：上表中 WAKEUP_N 、 GPIO0 和 GPIO1 实际上是永远被拉为低电平的（你也可以看到在 fpga_top_example_ft600.sv 中它们被 assign 为 0），因此有些板子的设计直接用电阻把它们拉到GND上，而没有连接到 FPGA ，对于这种情况，就不用在 FPGA 约束它们的引脚，并直接在 fpga_top_example_ft600.sv 中注释掉与它们相关的语句即可。
 
 如果你要自己画 FT600 的 PCB，可参考**图5** 。
 
@@ -292,9 +292,9 @@ FT600 是 USB3.0 Super Speed 通信芯片，理论速率为 200MBps ，本例实
 在 FPGA 工程中，另外注意以下几点：
 
 * `usb_clk` 频率为 100MHz 。你可以把 `usb_clk` 约束为 100MHz，来指导时序分析。实际上，即使不加该约束也不影响正常运行。
-* fpga_top.sv 中的主时钟 clk 要连在 FPGA 板的晶振上，频率不限，比如 24MHz, 50MHz, 100MHz 均可。
+* fpga_top_example_ft600.sv 中的主时钟 clk 要连在 FPGA 板的晶振上，频率不限，比如 24MHz, 50MHz, 100MHz 均可。
 * led 引脚连一颗 LED 灯（不是必须的），它平常保持 1，当发现接收到的数据不是递增的时，会变成 0 并保持一秒。
-* 请关注本例 fpga_top.sv 中 ftdi_245fifo 模块的参数配置：
+* 请关注本例 fpga_top_example_ft600.sv 中 ftdi_245fifo 模块的参数配置：
   * `C_DEXP` 被设为 1，这是因为 FT600 的数据线是 16bit 的。
   * `TX_DEXP` 被设为 3，因此用户发送接口的 `tx_data` 信号的宽度是 64bit（这只是本例的取值，你可以根据你的项目需要来修改）。
   * `RX_DEXP` 参数被设为 0，因此用户接收接口的 `rx_data` 信号的宽度是 8bit（这只是本例的取值，你可以根据你的项目需要来修改）。
@@ -303,7 +303,7 @@ FT600 是 USB3.0 Super Speed 通信芯片，理论速率为 200MBps ，本例实
 
 ## 步骤3：在电脑上运行通信程序
 
-我在 [FT600_example/Python](./FT600_example/Python) 文件夹中提供了以下几个 Python 程序，它们会通过 FT600 与 FPGA 进行通信。运行这些程序之前，请确保 FPGA 中下载了步骤2中建立的工程。
+我在 [python_ft600](./python_ft600) 文件夹中提供了以下几个 Python 程序，它们会通过 FT600 与 FPGA 进行通信。运行这些程序之前，请确保 FPGA 中下载了步骤2中建立的工程。
 
 | 文件                    | 功能                                                         |
 | ----------------------- | ------------------------------------------------------------ |
@@ -469,32 +469,32 @@ Please follow the instructions in [FTD2XX_guide.md](./FTD2XX_guide.md) to instal
 
 Build an FPGA project and add the following Verilog source files:
 
-* [FT232H_example/fpga_top.sv](./FT232H_example/fpga_top.sv) : as the top level of the project.
-* ftdi_245fifo.sv , stream_async_fifo.sv , stream_wtrans.sv in the [RTL](./RTL) folder: they will be called by fpga_top.sv.
+* fpga_top_example_ft232h.sv in the [RTL](./RTL) folder: as the top module of the project.
+* ftdi_245fifo.sv , stream_async_fifo.sv , stream_wtrans.sv in the [RTL](./RTL) folder: they will be called by the top module.
 
-Then, please make pin constraints in the FPGA project. Specifically, you need to check the schematic of your FPGA board (or the supporting materials of the development board) to understand which FT232H pin should connected to which FPGA pin; then, constraint the signals of the top layer of the FPGA project (that is, fpga_top.sv) to the corresponding FPGA pin number. The correspondence is shown in the following table (this table is simplified from [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) page 9):
+Then, please make pin constraints in the FPGA project. Specifically, you need to check the schematic of your FPGA board (or the supporting materials of the development board) to understand which FT232H pin should connected to which FPGA pin; then, constraint the signals of the top layer of the FPGA project (that is, fpga_top_example_ft232h.sv) to the corresponding FPGA pin number. The correspondence is shown in the following table (this table is simplified from [FT232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT232H.pdf) page 9):
 
-| FT232H pin | FT232H pin name | FT232H pin name (in 245fifo mode) | signal name in fpga_top.sv |
-| :--------: | :-------------: | :-------------------------------: | :------------------------: |
-|     13     |     ADBUS0      |                D0                 |        usb_data[0]         |
-|     14     |     ADBUS1      |                D1                 |        usb_data[1]         |
-|     15     |     ADBUS2      |                D2                 |        usb_data[2]         |
-|     16     |     ADBUS3      |                D3                 |        usb_data[3]         |
-|     17     |     ADBUS4      |                D4                 |        usb_data[4]         |
-|     18     |     ADBUS5      |                D5                 |        usb_data[5]         |
-|     19     |     ADBUS6      |                D6                 |        usb_data[6]         |
-|     20     |     ADBUS7      |                D7                 |        usb_data[7]         |
-|     21     |     ACBUS0      |               RXF\#               |          usb_rxf           |
-|     25     |     ACBUS1      |               TXE\#               |          usb_txe           |
-|     26     |     ACBUS2      |               RD\#                |           usb_rd           |
-|     27     |     ACBUS3      |               WR\#                |           usb_wr           |
-|     28     |     ACBUS4      |              SIWU\#               |     usb_siwu \*  (=1)      |
-|     29     |     ACBUS5      |              CLKOUT               |          usb_clk           |
-|     30     |     ACBUS6      |               OE\#                |           usb_oe           |
-|     31     |     ACBUS7      |             PWRSAV\#              |    usb_pwrsav \*  (=1)     |
-|     34     |     RESET\#     |              RESET\#              |    usb_resetn \*  (=1)     |
+| FT232H pin | FT232H pin name | FT232H pin name (in 245fifo mode) | signal name in top module |
+| :--------: | :-------------: | :-------------------------------: | :-----------------------: |
+|     13     |     ADBUS0      |                D0                 |        usb_data[0]        |
+|     14     |     ADBUS1      |                D1                 |        usb_data[1]        |
+|     15     |     ADBUS2      |                D2                 |        usb_data[2]        |
+|     16     |     ADBUS3      |                D3                 |        usb_data[3]        |
+|     17     |     ADBUS4      |                D4                 |        usb_data[4]        |
+|     18     |     ADBUS5      |                D5                 |        usb_data[5]        |
+|     19     |     ADBUS6      |                D6                 |        usb_data[6]        |
+|     20     |     ADBUS7      |                D7                 |        usb_data[7]        |
+|     21     |     ACBUS0      |               RXF\#               |          usb_rxf          |
+|     25     |     ACBUS1      |               TXE\#               |          usb_txe          |
+|     26     |     ACBUS2      |               RD\#                |          usb_rd           |
+|     27     |     ACBUS3      |               WR\#                |          usb_wr           |
+|     28     |     ACBUS4      |              SIWU\#               |     usb_siwu \*  (=1)     |
+|     29     |     ACBUS5      |              CLKOUT               |          usb_clk          |
+|     30     |     ACBUS6      |               OE\#                |          usb_oe           |
+|     31     |     ACBUS7      |             PWRSAV\#              |    usb_pwrsav \*  (=1)    |
+|     34     |     RESET\#     |              RESET\#              |    usb_resetn \*  (=1)    |
 
-> **\*Note** : SIWU\#, PWRSAV\# and RESET\# in the above table are actually always pulled to high (you can also see that they are assigned 1 in fpga_top.sv). Some boards directly use resistors to pull-up them without connecting them to the FPGA, in this case, you don't need to constrain these pins and simply comment out the statements related to them in fpga_top.sv.
+> **\*Note** : SIWU\#, PWRSAV\# and RESET\# in the above table are actually always pulled to high (you can also see that they are assigned 1 in fpga_top_example_ft232h.sv). Some boards directly use resistors to pull-up them without connecting them to the FPGA, in this case, you don't need to constrain these pins and simply comment out the statements related to them in fpga_top_example_ft232h.sv.
 >
 > **Note** : For FT2232H, please refer to [FT2232H DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf) page 9.
 
@@ -507,9 +507,9 @@ If you want to draw the FT232H PCB by yourself, please refer to **Figure3**.
 In the FPGA project, please note:
 
 * `usb_clk` frequency is 60MHz. You can constrain `usb_clk` to 60MHz to guide timing analysis. In fact, even if the constraint is not imposed, it will not affect normal operation.
-* The main clock `clk` in fpga_top.sv should be connected to the crystal oscillator of the FPGA board, and the frequency is not limited, such as 24MHz, 50MHz, 100MHz.
+* The main clock `clk` in fpga_top_example_ft232h.sv should be connected to the crystal oscillator of the FPGA board, and the frequency is not limited, such as 24MHz, 50MHz, 100MHz.
 * The led pin is connected to an LED light (not necessary), it usually remains 1, when it is found that the received data is not incremented, it will become 0 and remain for one second.
-* Please pay attention to the parameter configuration of the ftdi_245fifo module in fpga_top.sv in this example:
+* Please pay attention to the parameter configuration of the ftdi_245fifo module in fpga_top_example_ft232h.sv in this example:
   * `C_DEXP` is set to 0, this is because the data line of FT232H is 8bit.
   * `TX_DEXP` is set to 3, so the width of the `tx_data` signal of the user sending interface is 64bit (this is just the value of this example, you can modify it according to your project needs).
   * The `RX_DEXP` parameter is set to 0, so the width of the `rx_data` signal of the user receiving interface is 8bit (this is just the value of this example, you can modify it according to your project needs).
@@ -537,7 +537,7 @@ First go to the [FT\_Prog download page](https://ftdichip.com/utilities/#ft_prog
 
 ## Step4: Run Programs on Host-PC
 
-I provide the following Python programs in the [FT232H_example/Python](./FT232H_example/Python) folder that will communicate with the FPGA through the FT232H. Before running these programs, please make sure that the FT232H has been programmed into 245fifo mode according to step3, and the FPGA project created in step2 has been programed to the FPGA.
+I provide the following Python programs in the [python_ft232h](./python_ft232h) folder that will communicate with the FPGA through the FT232H. Before running these programs, please make sure that the FT232H has been programmed into 245fifo mode according to step3, and the FPGA project created in step2 has been programed to the FPGA.
 
 | File Name               | Function                                                     |
 | ----------------------- | ------------------------------------------------------------ |
@@ -561,12 +561,12 @@ Please follow the instructions in [FTD3XX_guide.md](./FTD3XX_guide.md) to instal
 
 Build an FPGA project and add the following Verilog source files:
 
-* [FT600_example/fpga_top.sv](./FT600_example/fpga_top.sv) : as the top level of the project.
-* ftdi_245fifo.sv , stream_async_fifo.sv , stream_wtrans.sv in the [RTL](./RTL) folder: they will be called by fpga_top.sv.
+* fpga_top_example_ft600.sv in the [RTL](./RTL) folder: as the top module of the project.
+* ftdi_245fifo.sv , stream_async_fifo.sv , stream_wtrans.sv in the [RTL](./RTL) folder: they will be called by the top module.
 
-Then, please make pin constraints in the FPGA project. Specifically, you need to check the schematic of your FPGA board (or the supporting materials of the development board) to understand which FT600 pin should connected to which FPGA pin; then, constraint the signals of the top layer of the FPGA project (that is, fpga_top.sv) to the corresponding FPGA pin number. The correspondence is shown in the following table (this table is simplified from [FT600 DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT600Q-FT601Q%20IC%20Datasheet.pdf) page 7-10):
+Then, please make pin constraints in the FPGA project. Specifically, you need to check the schematic of your FPGA board (or the supporting materials of the development board) to understand which FT600 pin should connected to which FPGA pin; then, constraint the signals of the top layer of the FPGA project (that is, fpga_top_example_ft600.sv) to the corresponding FPGA pin number. The correspondence is shown in the following table (this table is simplified from [FT600 DataSheet](https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT600Q-FT601Q%20IC%20Datasheet.pdf) page 7-10):
 
-| FT600 pin number | FT600 pin name | signal name infpga_top.sv |
+| FT600 pin number | FT600 pin name | signal name in top module |
 | :--------------: | :------------: | :-----------------------: |
 |        33        |     DATA_0     |        usb_data[0]        |
 |        34        |     DATA_1     |        usb_data[1]        |
@@ -598,9 +598,9 @@ Then, please make pin constraints in the FPGA project. Specifically, you need to
 |        12        |     GPIO0      |   usb_gpio0 \*\*  (=0)    |
 |        13        |     GPIO1      |   usb_gpio1 \*\*  (=0)    |
 
-> **\*Note** : SIWU\_N and RESET\_N in the above table are actually always pulled to high (you can also see that they are assigned 1 in fpga_top.sv). Some boards directly use resistors to pull-up them without connecting them to the FPGA, in this case, you don't need to constrain these pins and simply comment out the statements related to them in fpga_top.sv.
+> **\*Note** : SIWU\_N and RESET\_N in the above table are actually always pulled to high (you can also see that they are assigned 1 in fpga_top_example_ft600.sv). Some boards directly use resistors to pull-up them without connecting them to the FPGA, in this case, you don't need to constrain these pins and simply comment out the statements related to them in fpga_top_example_ft600.sv.
 >
-> **\*\*Note** : WAKEUP\_N, GPIO0 and GPIO1 in the above table are actually always pulled to GND (you can also see that they are assigned 0 in fpga_top.sv). Some boards directly use resistors to pull-down them without connecting them to the FPGA, in this case, you don't need to constrain these pins and simply comment out the statements related to them in fpga_top.sv.
+> **\*\*Note** : WAKEUP\_N, GPIO0 and GPIO1 in the above table are actually always pulled to GND (you can also see that they are assigned 0 in fpga_top_example_ft600.sv). Some boards directly use resistors to pull-down them without connecting them to the FPGA, in this case, you don't need to constrain these pins and simply comment out the statements related to them in fpga_top_example_ft600.sv.
 
 If you want to draw the FT600 PCB by yourself, please refer to **Figure5**.
 
@@ -611,9 +611,9 @@ If you want to draw the FT600 PCB by yourself, please refer to **Figure5**.
 In the FPGA project, please note:
 
 * `usb_clk` frequency is 100MHz. You can constrain `usb_clk` to 100MHz to guide timing analysis. In fact, even if the constraint is not imposed, it will not affect normal operation.
-* The main clock `clk` in fpga_top.sv should be connected to the crystal oscillator of the FPGA board, and the frequency is not limited, such as 24MHz, 50MHz, 100MHz.
+* The main clock `clk` in fpga_top_example_ft600.sv should be connected to the crystal oscillator of the FPGA board, and the frequency is not limited, such as 24MHz, 50MHz, 100MHz.
 * The led pin is connected to an LED light (not necessary), it usually remains 1, when it is found that the received data is not incremented, it will become 0 and remain for one second.
-* Please pay attention to the parameter configuration of the ftdi_245fifo module in fpga_top.sv in this example:
+* Please pay attention to the parameter configuration of the ftdi_245fifo module in fpga_top_example_ft600.sv in this example:
   * `C_DEXP` is set to 1, this is because the data line of FT600 is 16bit.
   * `TX_DEXP` is set to 3, so the width of the `tx_data` signal of the user sending interface is 64bit (this is just the value of this example, you can modify it according to your project needs).
   * The `RX_DEXP` parameter is set to 0, so the width of the `rx_data` signal of the user receiving interface is 8bit (this is just the value of this example, you can modify it according to your project needs).
@@ -622,7 +622,7 @@ Then you can compile the project, this step is omitted.
 
 ## Step3: Run Programs on Host-PC
 
-I provide the following Python programs in the [FT600_example/Python](./FT600_example/Python) folder that will communicate with the FPGA through FT600. Before running these programs, please make sure that the FPGA project created in step2 has been programed to the FPGA.
+I provide the following Python programs in the [python_ft600](./python_ft600) folder that will communicate with the FPGA through FT600. Before running these programs, please make sure that the FPGA project created in step2 has been programed to the FPGA.
 
 | File Name               | Function                                                     |
 | ----------------------- | ------------------------------------------------------------ |
