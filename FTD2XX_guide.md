@@ -1,3 +1,5 @@
+中文 | [English](#en)
+
 安装 FTD2XX 驱动和 Python FTD2XX 库
 ====================================
 
@@ -45,3 +47,53 @@ import ftd2xx
 
 
 至此，FT232H 所需的 Python 运行环境已就绪。
+
+
+
+<span id="en">Install FTD2XX Driver and Library</span>
+====================================
+
+To run FT232H related Python programs on Windows, follow these steps:
+
+> Note: This document was written in 2019. If the official website is updated later, the general process will definitely remain unchanged, but some operational details (for example, the download file cannot be found on the official website) will need to be worked around.
+
+### Step1: Install FTD2XX Driver and download FTD2XX.dll
+
+Go to [D2XX Driver official website](https://www.ftdichip.com/Drivers/D2XX.htm), in the table in the D2XX Drivers column, download the  driver (.exe file) and install it. As shown below.
+
+Also, to download the DLL, unzip it and find the FTD2XX.dll file that matches your computer. For a 32-bit computer, find the 32-bit(i386) DLL; for a 64-bit computer, find the 64-bit(amd64) DLL. If the file name is FTD2XX64.DLL, etc., please always rename it to FTD2XX.DLL
+
+![FT232h驱动下载](./figures/ft232h_driver_download.png)
+
+### Step2: Verify Installation
+
+Insert the FT232H USB port of the development board into the computer. If the driver is installed successfully, a **USB Serial Converter** should be identified in the Windows Device Manager. As shown below.
+
+![FT232H被识别](./figures/ft232h_ready.png)
+
+### Step3: Install Python3
+
+If you don't have Python3 installed, please go to [Anaconda official website](https://www.anaconda.com/products/individual) to download and install Python3, the major version number must be Python3, the minor version number is not limited, can be Python3.6, Python3.9 and so on.
+
+Note: If it is a 32-bit computer, please install 32-bit Python; if it is a 64-bit computer, please install 64-bit Python.
+
+### Step4: Install ftd2xx Library for Python
+
+Open CMD or PowerShell, run command:
+
+```powershell
+pip install ftd2xx
+```
+
+### Step5: Copy FTD2XX.dll File to Python Environment
+
+Copy the FTD2XX.DLL file we downloaded in step1 to the Python's root directory (for example, on my computer, the Python root directory is **C:/Anaconda3/** ). Note that 32-bit Python must correspond to a 32-bit DLL; 64-bit Python must correspond to a 64-bit DLL.
+
+Then, you can run the following statement in python to verify its installation:
+
+```python
+import ftd2xx
+```
+
+
+Now the Python runtime environment required by the FT232H is ready.

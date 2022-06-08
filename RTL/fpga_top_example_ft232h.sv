@@ -1,6 +1,6 @@
 
 //--------------------------------------------------------------------------------------------------------
-// Module  : fpga_top_ft232h
+// Module  : fpga_top_example_ft232h
 // Type    : synthesizable, FPGA's top, IP's example design
 // Standard: SystemVerilog 2005 (IEEE1800-2005)
 // Function: an example of ftdi_245fifo, connect FT232H chip
@@ -8,7 +8,7 @@
 //           recv data from FT232H chip and check whether it is increasing
 //--------------------------------------------------------------------------------------------------------
 
-module fpga_top_ft232h (
+module fpga_top_example_ft232h (
     input  wire         clk,   // main clock, connect to on-board crystal oscillator
     output wire         led,   // used to show whether the recv data meets expectations
     

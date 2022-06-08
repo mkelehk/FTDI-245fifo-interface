@@ -1,6 +1,6 @@
 
 //--------------------------------------------------------------------------------------------------------
-// Module  : fpga_top_ft600
+// Module  : fpga_top_example_ft600
 // Type    : synthesizable, FPGA's top, IP's example design
 // Standard: SystemVerilog 2005 (IEEE1800-2005)
 // Function: an example of ftdi_245fifo, connect FT600Q chip
@@ -8,9 +8,10 @@
 //           recv data from FT600Q chip and check whether it is increasing
 //--------------------------------------------------------------------------------------------------------
 
-module fpga_top_ft600 (
+module fpga_top_example_ft600 (
     input  wire         clk,   // main clock, connect to on-board crystal oscillator
     output wire         led,   // used to show whether the recv data meets expectations
+    
     // USB3.0 (FT600Q chip)
     output wire         usb_resetn,    // to FT600's pin10 (RESET_N) , Comment out this line if this signal is not connected to FPGA.
     output wire         usb_wakeupn,   // to FT600's pin11 (WAKEUP_N), Comment out this line if this signal is not connected to FPGA.
